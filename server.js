@@ -14,4 +14,4 @@ app.listen(PORT, () => {
 });
 
 //test query to DB
-db.printTableData("test");
+//db.printTableData("test");
