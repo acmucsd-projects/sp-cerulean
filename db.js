@@ -27,4 +27,5 @@ const printTableData = (table) => {
     });
   });
 };
-module.exports = { connectToPG, printTableData };
+
+module.exports = { connectToPG, printTableData, db };
