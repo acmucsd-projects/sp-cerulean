@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const environment = require("dotenv").config({ path: "./config.env" });
+require("dotenv").config({ path: "./config.env" });
 
 const db = new Client({
   connectionString: process.env.DATABASE_URL,
@@ -27,4 +27,5 @@ const printTableData = (table) => {
     });
   });
 };
-module.exports = { connectToPG, printTableData };
+
+module.exports = { connectToPG, printTableData, db };
