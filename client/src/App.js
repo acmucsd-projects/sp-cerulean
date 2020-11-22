@@ -1,10 +1,12 @@
 import './App.css';
+import Login from "./components/Login";
+import Home from "./components/Home";
 
 function App() {
   return (
-    <h1>
-        ACM Visualization
-    </h1>
+    <div>
+        <Login />
+    </div>
   );
 }
 
