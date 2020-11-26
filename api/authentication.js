@@ -5,6 +5,13 @@ const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 
+/**
+ * POST route to /api/authentication/register to register user
+ * @param username username to register with
+ * @param password password to register with
+ * @returns JSON webtoken for protected routes
+ */
+
 router.post("/register", async (req, res) => {
   //checking if account already exists
   db.query(
@@ -43,8 +50,15 @@ router.post("/register", async (req, res) => {
   );
 });
 
+/**
+ * POST route to /api/authentication/login to login user
+ * @param username username to login with
+ * @param password password to login with
+ * @returns JSON webtoken for protected routes
+ */
+
 router.post("/login", async (req, res) => {
-  //checking if account already exists
+  //searching for account in DB
   db.query(
     "SELECT * FROM auth WHERE username='" + req.body.username + "'",
     (error, response) => {
@@ -54,7 +68,7 @@ router.post("/login", async (req, res) => {
       } else if (response.rowCount == 0 || response.rowCount > 1) {
         res.status(401).send("Username or Password is incorrect");
       } else {
-        //login user
+        //checking for valid credentials
         bcrypt.compare(
           req.body.password,
           response.rows[0].encrypted_password,
