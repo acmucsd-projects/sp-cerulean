@@ -41,4 +41,38 @@ router.post("/register", async (req, res) => {
   );
 });
 
+router.post("/login", async (req, res) => {
+  //checking if account already exists
+  db.query(
+    "SELECT * FROM auth WHERE username='" + req.body.username + "'",
+    (error, response) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("There was an error with the server");
+      } else if (response.rowCount == 0 || response.rowCount > 1) {
+        res.status(401).send("Username or Password is incorrect");
+      } else {
+        //login user
+        bcrypt.compare(
+          req.body.password,
+          response.rows[0].encrypted_password,
+          (err, result) => {
+            if (err) {
+              res.status(500).send("There was an error with the server");
+            } else if (result) {
+              const token = jwt.sign(
+                { user_id: response.rows[0].id },
+                process.env.JWT_TOKEN
+              );
+              res.status(200).send(token);
+            } else {
+              res.status(401).send("Username or Password is incorrect");
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
 module.exports = router;
