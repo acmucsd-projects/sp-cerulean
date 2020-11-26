@@ -34,7 +34,9 @@ router.post("/register", async (req, res) => {
           }
         });
 
-        const token = jwt.sign({ user_id: id }, process.env.JWT_TOKEN);
+        const token = jwt.sign({ user_id: id }, process.env.JWT_TOKEN, {
+          expiresIn: process.env.EXPIRES_IN,
+        });
         res.status(200).send(token);
       }
     }
@@ -62,7 +64,10 @@ router.post("/login", async (req, res) => {
             } else if (result) {
               const token = jwt.sign(
                 { user_id: response.rows[0].id },
-                process.env.JWT_TOKEN
+                process.env.JWT_TOKEN,
+                {
+                  expiresIn: process.env.EXPIRES_IN,
+                }
               );
               res.status(200).send(token);
             } else {
