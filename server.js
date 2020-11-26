@@ -1,3 +1,4 @@
+require("dotenv").config({ path: "./config.env" });
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -12,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use("/api/event", require("./api/event"));
-
+app.use("/api/authentication", require("./api/authentication"));
 //production environment
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
   try {
     //tag onto request
     const decoded = jwt.verify(token, process.env.JWT_TOKEN);
-    console.log(decoded);
+    req.user_id = decoded.user_id;
     next();
   } catch (err) {
     res.status(401).send("Access Denied");
