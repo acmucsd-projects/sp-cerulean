@@ -10,7 +10,7 @@ router.get("/eventAttend/:eventId", async (req, res) => {
   let attendanceCount = 0;
   let staffMembers = 0;
   try {
-    dbAccess.db.query("SELECT * FROM attendance WHERE id = $1", [req.params.eventId], (error, response) => {
+    dbAccess.db.query("SELECT * FROM attendance WHERE event_id = $1", [req.params.eventId], (error, response) => {
       response.rows.forEach((value) => {
         attendanceCount++;
         if (value.asstaff === "true") {
