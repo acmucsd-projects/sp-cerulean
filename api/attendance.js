@@ -2,6 +2,7 @@ const { db } = require("../db");
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+
 /**
  * GET Route that handles single event attendance
  * @param eventName takes in an event name

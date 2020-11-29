@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use("/api/attendance", require("./api/attendance"));
 app.use("/api/authentication", require("./api/authentication"));
+
 //production environment
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
