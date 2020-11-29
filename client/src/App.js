@@ -1,12 +1,18 @@
-import './App.css';
-import Login from "./components/Login";
+import React from "react"
+import Home from "./components/Home";
+import CssBaseline from '@material-ui/core/CssBaseline';
 
-function App() {
+
+const App = () => {
   return (
-    <div>
-        <Login />
-    </div>
+    <React.Fragment>
+      <CssBaseline />
+      <div>
+        <Home />
+      </div>
+    </React.Fragment>
+    
   );
-}
+};
 
 export default App;

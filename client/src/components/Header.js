@@ -8,7 +8,7 @@ const Header = () => {
     color="primary">
         <Toolbar>
             <Typography variant='h1'
-            style={{ padding: 10 }}>
+            style={{ padding: 5 }}>
                 ACM Visualization
             </Typography>
         </Toolbar>
