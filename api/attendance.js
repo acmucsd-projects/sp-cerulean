@@ -37,12 +37,12 @@ router.get("/eventAttend/:eventName", auth, async (req, res) => {
  * @param hour takes in a hour
  * @returns json object with number of attendances in that hour
  */
-router.get("/eventAttendHour/:hour", async (req, res) => {
+router.get("/eventAttendHour/:hour", auth, async (req, res) => {
   let hourCount = 0;
   try {
     dbAccess.db.query("SELECT * FROM attendance", (error, response) => {
       response.rows.forEach((value) => {
-        if (value.attendance_time.getHours() == req.params.hour) {
+        if (moment(value.attendance_time).hour() == req.params.hour) {
           hourCount++;
         }
       });
@@ -58,16 +58,16 @@ router.get("/eventAttendHour/:hour", async (req, res) => {
 
 /**
  * GET Route that finds attendance by day
- *     Sunday - Saturday : 0 - 6
+ * 
  * @param day takes in a week
- * @returns json object with number of attendances on that day of the week
+ * @returns json object with number of attendances on that day of the week. Returns 1-7 where 1 is Monday and 7 is Sunday.
  */
-router.get("/eventAttendDay/:day", async (req, res) => {
+router.get("/eventAttendDay/:day", auth, async (req, res) => {
   let dayCount = 0;
   try {
     dbAccess.db.query("SELECT * FROM attendance", (error, response) => {
       response.rows.forEach((value) => {
-        if (value.attendance_time.getDay() == req.params.day) {
+        if (moment(value.attendance_time).isoWeekday() == req.params.day) {
          dayCount++;
         }
       });
@@ -85,7 +85,7 @@ router.get("/eventAttendDay/:day", async (req, res) => {
  * GET Route that returns all events
  * @returns json object info on all events
  */
-router.get("/getEvents", async (req, res) => {
+router.get("/getEvents", auth, async (req, res) => {
   try {
     dbAccess.db.query("SELECT * FROM eventtable", (error, response) => {
       res.status(200).json({
