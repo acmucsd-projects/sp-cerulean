@@ -12,10 +12,13 @@
   "author": "Advay, Ashley, Samir, Dennis, Justin, Tim",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "pg": "^8.4.2"
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.4.2",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",
