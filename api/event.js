@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 /**
  * GET Route that handles single event attendance
- * @param eventName takes in an event name
+ * @param eventId the ID of the event
  * @returns json object with number of attendances and number of staff members
  */
 router.get("/eventAttend/:eventName", auth, async (req, res) => {
@@ -13,11 +13,9 @@ router.get("/eventAttend/:eventName", auth, async (req, res) => {
   try {
     db.query("SELECT * FROM attendance", (error, response) => {
       response.rows.forEach((value) => {
-        if (value.eventname == req.params.eventName) {
-          attendanceCount++;
-          if (value.asstaff == "true") {
-            staffMembers++;
-          }
+        attendanceCount++;
+        if (value.asstaff === "true") {
+          staffMembers++;
         }
       });
       res.status(200).json({
