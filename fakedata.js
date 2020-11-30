@@ -82,7 +82,7 @@ fs.readFile(filename, "utf-8", async function(err, data) {
             lastname: user.lastName,
             graduationyear: user.graduationYear.toString(),
             major: user.major,
-            points: user.points.toString(),
+            points: Math.floor(100 * Math.random()).toString(),
         };
 
         await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
