@@ -54,8 +54,11 @@ router.get("/averagePoints/:eventId", async (req, res) => {
           medianPoints: null,
         });
       } else {
-        points.sort();
-        const mean = points.reduce((a, b) => a + b) / points.length;
+        // Sort numerically.
+        points.sort((a, b) => a - b);
+
+        // Divide the sum by the number of elements.
+        const mean = points.reduce((a, b) => a + b, 0) / points.length;
 
         const middleIndex = Math.floor(points.length / 2);
         const median = (points.length % 2 == 0)
