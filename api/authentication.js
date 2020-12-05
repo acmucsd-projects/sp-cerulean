@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
+const auth = require("../middleware/auth");
 
 /**
  * POST route to /api/authentication/register to register user
@@ -92,6 +93,15 @@ router.post("/login", async (req, res) => {
       }
     }
   );
+});
+
+/**
+ * POST route to /api/authentication/verify to validate the JWT for the user
+ * @returns if the user is allowed access or not
+ */
+
+router.post("/verify", auth, async (req, res) => {
+  res.status(200).send("User verified");
 });
 
 module.exports = router;
