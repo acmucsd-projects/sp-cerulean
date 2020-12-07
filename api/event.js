@@ -8,7 +8,7 @@ const auth = require("../middleware/auth");
  * @param eventId the ID of the event
  * @returns json object with number of attendances and number of staff members
  */
-router.get("/eventAttend/:eventId", async (req, res) => {
+router.get("/eventAttend/:eventId", auth, async (req, res) => {
   let attendanceCount = 0;
   let staffMembers = 0;
   try {
@@ -31,12 +31,40 @@ router.get("/eventAttend/:eventId", async (req, res) => {
 });
 
 /**
+ * GET route which returns event information.
+ * @param startIndex The index of the first event to return (chronological by start time).
+ * @param limit The maximum number of events to return.
+ * @returns A JSON array with the requested events.
+ */
+router.get("/eventInfo/:startIndex/:limit", auth, async (req, res) => {
+  const queryString = "SELECT * FROM eventtable ORDER BY eventstart, uuid LIMIT $1 OFFSET $2";
+
+  try {
+    const startIndex = parseInt(req.params.startIndex, 10);
+    const limit = parseInt(req.params.limit, 10);
+
+    if (isNaN(startIndex) || isNaN(limit) || startIndex < 0 || limit < 0) {
+      res.status(400).send("Invalid start index or limit.");
+      return;
+    }
+
+    db.query(queryString, [req.params.limit, req.params.startIndex], (error, response) => {
+      res.status(200).json(response.rows);
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("There was an error");
+  }
+});
+
+/**
  * GET route which returns an event's attendees' mean and median number of points.
  *
  * @param eventId The ID of the event.
  * @returns A JSON object with the mean and median point values.
  */
-router.get("/averagePoints/:eventId", async (req, res) => {
+router.get("/averagePoints/:eventId", auth, async (req, res) => {
   const queryString = "WITH attendee (uuid) AS (SELECT (user_id) FROM attendance WHERE event_id = $1)"
     + " SELECT (points) FROM usertable WHERE uuid IN (SELECT * FROM attendee)";
 
