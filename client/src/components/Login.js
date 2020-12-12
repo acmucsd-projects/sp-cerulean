@@ -23,6 +23,13 @@ const useStyles = makeStyles((theme) => ({
       order: 2,
     },
   },
+  textField: {
+    marginTop: theme.spacing(0),
+    marginBottom: theme.spacing(1),
+    marginLeft: theme.spacing(0),
+    marginRight: theme.spacing(1),
+    width: 200,
+  },
 }));
 
 const Login = () => {
@@ -63,6 +70,7 @@ const Login = () => {
                         id="email"
                         margin="dense"
                         variant='outlined'
+                        className={classes.textField}
                     />
                     <Typography variant='body'
                     style={{ padding: 0 }}>
@@ -72,6 +80,7 @@ const Login = () => {
                         id="email"
                         margin="dense"
                         variant='outlined'
+                        className={classes.textField}
                     />
                     <Button
                     onClick={() => { alert('You\'ve just started :)') }}
