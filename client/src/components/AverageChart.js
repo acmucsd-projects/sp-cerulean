@@ -30,7 +30,7 @@ const AverageChart = () => {
       .then(async (eventData) => {
         var titles = [];
         let pointDataArray = [];
-
+        console.log(eventData);
         const info = eventData.data[0];
         titles.push(info.title);
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Header from "./Header";
 import { ReactComponent as Computers } from "./computers.svg";
 
 const useStyles = makeStyles((theme) => ({
