@@ -14,7 +14,11 @@ const App = () => {
       <Header />
       <Switch>
         <Route exact path="/" component={Login} />
-        <Route exact path="/average" component={AverageChart} />
+        <Route
+          exact
+          path="/average"
+          render={() => <AverageChart numberOfEvents={5} />}
+        />
         <Route exact path="/home" component={Home} />
       </Switch>
     </Router>
