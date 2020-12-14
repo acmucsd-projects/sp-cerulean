@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
+import { LinearProgress } from "@material-ui/core";
 
 const AverageChart = ({ numberOfEvents }) => {
   const [state, setState] = useState({
@@ -37,7 +38,7 @@ const AverageChart = ({ numberOfEvents }) => {
       },
       legend: {
         display: true,
-        position: "right",
+        position: "bottom",
         labels: {
           fontSize: 17,
         },
@@ -56,7 +57,6 @@ const AverageChart = ({ numberOfEvents }) => {
     const eventData = await axios
       .get("/api/event/eventInfo/0/" + numberOfEvents, config)
       .catch((err) => console.error(err));
-
     var ids = [];
     var titles = [];
     if (eventData === undefined) {
@@ -105,13 +105,8 @@ const AverageChart = ({ numberOfEvents }) => {
 
   return (
     <div className="chart">
-      {state.data != null ? (
-        <div>
-          <Bar data={state.data} options={state.options} />
-        </div>
-      ) : (
-        <h1>There was an error</h1>
-      )}
+      {state.data == null && <LinearProgress />}
+      <Bar data={state.data} options={state.options} />
     </div>
   );
 };

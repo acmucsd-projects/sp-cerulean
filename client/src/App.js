@@ -17,7 +17,7 @@ const App = () => {
         <Route
           exact
           path="/average"
-          render={() => <AverageChart numberOfEvents={5} />}
+          render={() => <AverageChart numberOfEvents={10} />}
         />
         <Route exact path="/home" component={Home} />
       </Switch>
