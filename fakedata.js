@@ -38,6 +38,11 @@ makeInsertQuery = (tableName, rowObj) => {
     return [queryString, queryArguments];
 }
 
+rateLimit = async (message) => {
+    await sleep(100);
+    console.log(message);
+}
+
 /**
  * Return whether a table is empty.
  * 
@@ -48,6 +53,10 @@ makeInsertQuery = (tableName, rowObj) => {
 tableIsEmpty = async (client, tableName) => {
     const result = await client.query(`SELECT * FROM ${tableName} LIMIT 1`);
     return result.rows.length === 0;
+}
+
+sleep = async(timeout) => {
+    await new Promise(resolve => setTimeout(resolve, timeout))
 }
 
 fs.readFile(filename, "utf-8", async function(err, data) {
@@ -61,6 +70,7 @@ fs.readFile(filename, "utf-8", async function(err, data) {
 
     /*
     // DANGER: delete existing data before inserting fake data.
+    console.log("DELETING ALL DATA");
     await dbAccess.db.query("DELETE FROM " + USER_TABLE);
     await dbAccess.db.query("DELETE FROM " + EVENT_TABLE);
     await dbAccess.db.query("DELETE FROM " + ATTENDANCE_TABLE);
@@ -86,6 +96,8 @@ fs.readFile(filename, "utf-8", async function(err, data) {
         };
 
         await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
+
+        rateLimit(`user ${user.uuid}`);
     }
 
     for (const ev of fakeData.events) {
@@ -100,6 +112,8 @@ fs.readFile(filename, "utf-8", async function(err, data) {
         }
 
         await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
+
+        rateLimit(`event ${ev.uuid}`);
     }
 
     for (const attendance of fakeData.attendances) {
@@ -111,6 +125,8 @@ fs.readFile(filename, "utf-8", async function(err, data) {
         };
 
         await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
+
+        rateLimit(`attendance ${attendance.userUuid} ${attendance.eventUuid}`);
     }
 
     console.log("Fake data inserted.");
