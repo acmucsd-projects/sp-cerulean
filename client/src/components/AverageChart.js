@@ -50,7 +50,7 @@ const AverageChart = ({ numberOfEvents }) => {
     //need to update token value
     const config = {
       headers: {
-        "x-auth-token": "",
+        "x-auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg2MjMwNDAsImV4cCI6MTY0MDE4MDY0MH0.hSFxJAAsis604ix58pE2Ic3CD7RO2u7v-OjtXBzMnW4",
       },
     };
     //gets all event data
