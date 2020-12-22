@@ -59,12 +59,49 @@ sleep = async(timeout) => {
     await new Promise(resolve => setTimeout(resolve, timeout))
 }
 
+/**
+ * Generate randomized event start and end dates.
+ *
+ * @return An array with two strings representing the start and end dates.
+ */
+randomEventStartEnd = () => {
+    const today = new Date();
+
+    const startDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        Math.round(today.getDate() + (10 * Math.random())),
+        Math.round(8 + (16 * Math.random())),
+        15 * Math.round(4 * Math.random())
+    );
+
+    const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+        startDate.getHours(),
+        startDate.getMinutes() + 15 * Math.round(1 + 8 * Math.random())
+    );
+
+    return [startDate.toISOString(), endDate.toISOString()];
+}
+
 fs.readFile(filename, "utf-8", async function(err, data) {
     if (err) {
         throw err;
     }
 
     const fakeData = JSON.parse(data);
+
+    for (const user of fakeData.users) {
+        user.points = Math.floor(100 * Math.random()).toString();
+    }
+
+    for (const ev of fakeData.events) {
+        const startAndEnd = randomEventStartEnd();
+        ev.start = startAndEnd[0];
+        ev.end = startAndEnd[1];
+    }
 
     await dbAccess.connectToPG();
 
@@ -92,12 +129,12 @@ fs.readFile(filename, "utf-8", async function(err, data) {
             lastname: user.lastName,
             graduationyear: user.graduationYear.toString(),
             major: user.major,
-            points: Math.floor(100 * Math.random()).toString(),
+            points: user.points,
         };
 
         await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
 
-        rateLimit(`user ${user.uuid}`);
+        rateLimit(`user ${JSON.stringify(user, null, 2)}`);
     }
 
     for (const ev of fakeData.events) {
@@ -113,7 +150,7 @@ fs.readFile(filename, "utf-8", async function(err, data) {
 
         await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
 
-        rateLimit(`event ${ev.uuid}`);
+        rateLimit(`event ${JSON.stringify(ev, null, 2)}`);
     }
 
     for (const attendance of fakeData.attendances) {
@@ -126,7 +163,7 @@ fs.readFile(filename, "utf-8", async function(err, data) {
 
         await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
 
-        rateLimit(`attendance ${attendance.userUuid} ${attendance.eventUuid}`);
+        rateLimit(`attendance ${JSON.stringify(attendance, null, 2)}`);
     }
 
     console.log("Fake data inserted.");
