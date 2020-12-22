@@ -2,15 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
 import { LinearProgress } from "@material-ui/core";
-import ScriptTag from 'react-script-tag';
-import "../utils.js"
+import "../utils.js";
 // import "../chartjs-chart-matrix.js"
 
-// function isoDayOfWeek(intday) {
-//   let wd = dt.getDay(); // 0..6, from sunday
-//   wd = (wd + 6) % 7 + 1; // 1..7 from monday
-//   return '' + wd; // string so it gets parsed
-// }
 
 function isoDayInt(dt) {
   let wd = dt.getDay(); // 0..6, from sunday
