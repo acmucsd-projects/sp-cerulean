@@ -100,7 +100,7 @@ router.post("/login", async (req, res) => {
  * @returns if the user is allowed access or not
  */
 
-router.post("/verify", auth, async (req, res) => {
+router.get("/verify", auth, async (req, res) => {
   res.status(200).send("User verified");
 });
 
