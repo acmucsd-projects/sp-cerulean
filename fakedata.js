@@ -87,84 +87,94 @@ randomEventStartEnd = () => {
 }
 
 fs.readFile(filename, "utf-8", async function(err, data) {
-    if (err) {
-        throw err;
-    }
-
+    if (err) throw err;
     const fakeData = JSON.parse(data);
 
-    for (const user of fakeData.users) {
-        user.points = Math.floor(100 * Math.random()).toString();
-    }
+    fs.readFile("fake-dates.json", "utf-8", async function(err2, data2) {
+        if (err2) throw err2;
+        const fakeDates = JSON.parse(data2);
 
-    for (const ev of fakeData.events) {
-        const startAndEnd = randomEventStartEnd();
-        ev.start = startAndEnd[0];
-        ev.end = startAndEnd[1];
-    }
-
-    await dbAccess.connectToPG();
-
-    /*
-    // DANGER: delete existing data before inserting fake data.
-    console.log("DELETING ALL DATA");
-    await dbAccess.db.query("DELETE FROM " + USER_TABLE);
-    await dbAccess.db.query("DELETE FROM " + EVENT_TABLE);
-    await dbAccess.db.query("DELETE FROM " + ATTENDANCE_TABLE);
-    */
-
-    // Ensure that all tables are empty before proceeding.
-    for (const table of [USER_TABLE, EVENT_TABLE, ATTENDANCE_TABLE]) {
-        if (!(await tableIsEmpty(dbAccess.db, table))) {
-            throw new Error(`Table '${table}' already contains data.`
-                + " Fake data will not be inserted.");
-        }
-    }
-
-    for (const user of fakeData.users) {
-        const row = {
-            uuid: user.uuid,
-            email: user.email,
-            firstname: user.firstName,
-            lastname: user.lastName,
-            graduationyear: user.graduationYear.toString(),
-            major: user.major,
-            points: user.points,
-        };
-
-        await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
-
-        rateLimit(`user ${JSON.stringify(user, null, 2)}`);
-    }
-
-    for (const ev of fakeData.events) {
-        const row = {
-            uuid: ev.uuid,
-            eventstart: ev.start,
-            eventend: ev.end,
-            organization: ev.organization,
-            title: ev.title,
-            description: ev.description,
-            eventlocation: ev.location,
+        for (const user of fakeData.users) {
+            user.points = Math.floor(100 * Math.random()).toString();
         }
 
-        await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
+        for (const ev of fakeData.events) {
+            const dateIndex = Math.round(1 + Math.random() * (fakeDates.length - 3));
+            ev.start = new Date(fakeDates[dateIndex].start).toISOString();
+            ev.end = new Date(fakeDates[dateIndex].end).toISOString();
+        }
 
-        rateLimit(`event ${JSON.stringify(ev, null, 2)}`);
-    }
+        await dbAccess.connectToPG();
 
-    for (const attendance of fakeData.attendances) {
-        const row = {
-            user_id: attendance.userUuid,
-            event_id: attendance.eventUuid,
-            attendance_time: attendance.timestamp,
-            as_staff: attendance.asStaff.toString(),
-        };
+        /*
+        // DANGER: delete existing data before inserting fake data.
+        console.log("DELETING ALL DATA");
+        await dbAccess.db.query("DELETE FROM " + USER_TABLE);
+        await dbAccess.db.query("DELETE FROM " + EVENT_TABLE);
+        await dbAccess.db.query("DELETE FROM " + ATTENDANCE_TABLE);
+        */
 
-        await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
+        // Ensure that all tables are empty before proceeding.
+        for (const table of [USER_TABLE, EVENT_TABLE, ATTENDANCE_TABLE]) {
+            if (!(await tableIsEmpty(dbAccess.db, table))) {
+                throw new Error(`Table '${table}' already contains data.`
+                    + " Fake data will not be inserted.");
+            }
+        }
 
-        rateLimit(`attendance ${JSON.stringify(attendance, null, 2)}`);
-    }
+        for (const user of fakeData.users) {
+            const row = {
+                uuid: user.uuid,
+                email: user.email,
+                firstname: user.firstName,
+                lastname: user.lastName,
+                graduationyear: user.graduationYear.toString(),
+                major: user.major,
+                points: user.points,
+            };
 
-    console.log("Fake data inserted.");
+            await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
+
+            rateLimit(`user ${JSON.stringify(row, null, 2)}`);
+        }
+
+        for (const ev of fakeData.events) {
+            const row = {
+                uuid: ev.uuid,
+                eventstart: ev.start,
+                eventend: ev.end,
+                organization: ev.organization,
+                title: ev.title,
+                description: ev.description,
+                eventlocation: ev.location,
+            };
+
+            await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
+
+            rateLimit(`event ${JSON.stringify(row, null, 2)}`);
+        }
+
+        eventsByUuid = {};
+        for (const ev of fakeData.events) {
+            eventsByUuid[ev.uuid] = ev;
+        }
+
+        for (const attendance of fakeData.attendances) {
+            const timestamp = new Date(eventsByUuid[attendance.eventUuid].start);
+            timestamp.setMinutes(timestamp.getMinutes() + Math.round(5 * Math.random()));
+
+            const row = {
+                user_id: attendance.userUuid,
+                event_id: attendance.eventUuid,
+                attendance_time: timestamp.toISOString(),
+                as_staff: attendance.asStaff.toString(),
+            };
+
+            await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
+
+            rateLimit(`attendance ${JSON.stringify(row, null, 2)}`);
+        }
+
+        console.log("Fake data inserted.");
+    });
 });
