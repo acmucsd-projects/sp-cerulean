@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { UserContext } from "./UserContext";
+import AverageChart from "./components/AverageChart";
 
 const App = () => {
     const [user, setUser] = useState(null);

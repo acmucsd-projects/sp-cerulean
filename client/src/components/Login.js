@@ -48,14 +48,15 @@ const Login = () => {
           "Content-Type": "application/json",
         },
       };
-      const body = {
+      const body = JSON.stringify({
         username: "dennis@gmail.com",
         password: "test12345"
-      }
-        const result = axios.post("/api/authentication/login", body, config)
+      });
+      
+        const result = await axios.post("/api/authentication/login", body, config)
                             .catch((err) => console.error(err));
         setUser(user);
-        console.log(user);
+        console.log(result);
     
     };
     
@@ -96,8 +97,7 @@ const Login = () => {
                         margin="dense"
                         variant='outlined'
                         className={classes.textField}
-                        value="username"
-                        onChange={e => setState(e.target.value)}
+                        onChange={e => setState({...state, username: e.target.value})}
                     />
                     <Typography variant='body'
                     style={{ padding: 0 }}>
@@ -108,8 +108,7 @@ const Login = () => {
                         margin="dense"
                         variant='outlined'
                         className={classes.textField}
-                        value="password"
-                        onChange={e => setState(e.target.value)}
+                        onChange={e => setState({...state, password: e.target.value})}
                     />
                     <Button
                     onClick={event => window.location.href="./home"}
