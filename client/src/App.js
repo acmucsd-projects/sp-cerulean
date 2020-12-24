@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { UserContext } from "./UserContext";
-import AverageChart from "./components/AverageChart";
 import axios from "axios";
 import Header from "./components/Header";
 

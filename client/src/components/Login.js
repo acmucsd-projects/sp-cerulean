@@ -1,7 +1,6 @@
-import React, { useContext, setState, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Header from "./Header";
 import { ReactComponent as Computers } from "./computers.svg";
 import { UserContext } from "../UserContext";
 import axios from "axios";
