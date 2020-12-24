@@ -107,7 +107,7 @@ const AverageChart = ({ numberOfEvents }) => {
 
   return (
     <div className="chart">
-      {state.data == null ? (
+      {state.data == null && user.token == null ? (
         <Fragment>
           <LinearProgress />
           <Bar options={state.options} />

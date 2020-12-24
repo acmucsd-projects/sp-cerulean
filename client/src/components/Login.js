@@ -56,7 +56,6 @@ const Login = () => {
     const result = await axios
       .post("/api/authentication/login", body, config)
       .catch((err) => console.error(err));
-    console.log(result.data);
     localStorage.setItem("token", result.data);
     setUser({ ...user, token: result.data });
   };

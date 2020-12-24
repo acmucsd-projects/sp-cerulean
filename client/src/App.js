@@ -16,7 +16,6 @@ const App = () => {
     if (localStorage.getItem("token") !== null) {
       checkToken();
     }
-    console.log("here");
   }, []);
 
   const checkToken = async () => {
