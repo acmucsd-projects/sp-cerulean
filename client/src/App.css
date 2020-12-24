@@ -1,1 +1,7 @@
-
+.chart {
+  width: 75%;
+  height: 75%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 100px;
+}

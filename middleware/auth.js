@@ -5,6 +5,12 @@ const auth = (req, res, next) => {
 
   try {
     //tag onto request
+    if (
+      process.env.NODE_ENV === "production" &&
+      token === process.env.BAD_TOKEN
+    ) {
+      throw err;
+    }
     const decoded = jwt.verify(token, process.env.JWT_TOKEN);
     req.user_id = decoded.user_id;
     next();
