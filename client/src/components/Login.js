@@ -5,6 +5,7 @@ import { ReactComponent as Computers } from "./computers.svg";
 import { UserContext } from "../UserContext";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   img: {
@@ -41,6 +42,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [alertState, setAlert] = useState(false);
 
   const login = async () => {
     const config = {
@@ -55,9 +57,18 @@ const Login = () => {
 
     const result = await axios
       .post("/api/authentication/login", body, config)
-      .catch((err) => console.error(err));
-    localStorage.setItem("token", result.data);
-    setUser({ ...user, token: result.data });
+      .catch((err) => {
+        console.error(err);
+        setAlert(true);
+        setTimeout(() => {
+          setAlert(false);
+        }, 5000);
+      });
+
+    if (result !== undefined) {
+      localStorage.setItem("token", result.data);
+      setUser({ ...user, token: result.data });
+    }
   };
 
   if (user.token !== null) {
@@ -66,6 +77,22 @@ const Login = () => {
 
   return (
     <div>
+      {alertState && (
+        <Alert
+          severity="error"
+          onClose={() => {
+            setAlert(false);
+          }}
+          style={{
+            width: "50%",
+            marginTop: "10px",
+            fontSize: 20,
+            textAlign: "center",
+          }}
+        >
+          Username or Password is incorrect
+        </Alert>
+      )}
       <Grid
         container
         direction="row"
@@ -106,6 +133,11 @@ const Login = () => {
               margin="dense"
               type="password"
               variant="outlined"
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  login();
+                }
+              }}
               className={classes.textField}
               onChange={(e) => setState({ ...state, password: e.target.value })}
             />
