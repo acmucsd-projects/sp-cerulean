@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
 import { LinearProgress } from "@material-ui/core";
+import { UserContext } from "../UserContext";
 
 const AverageChart = ({ numberOfEvents }) => {
+  const { user, setUser } = useContext(UserContext);
   const [state, setState] = useState({
     data: null,
     options: {
@@ -50,7 +52,7 @@ const AverageChart = ({ numberOfEvents }) => {
     //need to update token value
     const config = {
       headers: {
-        "x-auth-token": "",
+        "x-auth-token": user.token,
       },
     };
     //gets all event data
@@ -105,8 +107,14 @@ const AverageChart = ({ numberOfEvents }) => {
 
   return (
     <div className="chart">
-      {state.data == null && <LinearProgress />}
-      <Bar data={state.data} options={state.options} />
+      {state.data == null && user.token == null ? (
+        <Fragment>
+          <LinearProgress />
+          <Bar options={state.options} />
+        </Fragment>
+      ) : (
+        <Bar data={state.data} options={state.options} />
+      )}
     </div>
   );
 };

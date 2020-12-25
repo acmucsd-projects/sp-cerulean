@@ -1,5 +1,5 @@
 import "date-fns";
-import React from "react";
+import React, { useContext } from "react";
 import { ReactComponent as Computers } from "./computers.svg";
 import { Grid, Paper, Box, Typography, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,6 +11,9 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import { UserContext } from "../UserContext";
+import { Redirect } from "react-router-dom";
+import AverageChart from "./AverageChart";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = () => {
+  const { user, setUser } = useContext(UserContext);
   const classes = useStyles();
   const [type, setType] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState(
@@ -57,6 +61,11 @@ const Home = () => {
   const handleChange = (event) => {
     setType(event.target.value);
   };
+
+  if (user.token === null) {
+    return <Redirect to="/" />;
+  }
+
   return (
     <div>
       <Grid container spacing={3} direction="row" alignItems="center">
@@ -107,6 +116,9 @@ const Home = () => {
           <Paper className={classes.paper}>chart</Paper>
         </Grid>
       </Grid>
+      <div style={{ width: "75%" }}>
+        <AverageChart numberOfEvents={10} />
+      </div>
       <Grid container spacing={3} direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
@@ -127,14 +139,14 @@ const Home = () => {
             direction="column"
           >
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="body">NEW EVENT</Typography>
+              <Typography variant="body1">NEW EVENT</Typography>
               <TextField
                 id="event"
                 margin="dense"
                 variant="outlined"
                 className={classes.textField}
               />
-              <Typography variant="body">DATE</Typography>
+              <Typography variant="body1">DATE</Typography>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -151,7 +163,7 @@ const Home = () => {
                   inputVariant="outlined"
                 />
               </MuiPickersUtilsProvider>
-              <Typography variant="body">TIME</Typography>
+              <Typography variant="body1">TIME</Typography>
               <form className={classes.container} noValidate>
                 <TextField
                   id="time"
@@ -172,7 +184,7 @@ const Home = () => {
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Typography variant="body">TAGS</Typography>
+          <Typography variant="body1">TAGS</Typography>
           <Paper className={classes.paper}>tags</Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
