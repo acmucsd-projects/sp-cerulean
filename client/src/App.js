@@ -6,7 +6,8 @@ import Login from "./components/Login";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AverageChart from "./components/AverageChart";
 import Header from "./components/Header";
-import HeatMap from "./components/Heatmap";
+import HeatMap from "./components/HeatMap";
+import TestChart from "./components/TestChart";
 
 const App = () => {
   return (
@@ -23,7 +24,12 @@ const App = () => {
         <Route
           exact
           path="/heat"
-          render={() => <HeatMap numberOfEvents={10} />}
+          component={HeatMap}
+        />
+        <Route
+          exact
+          path="/test"
+          component={TestChart}
         />
         <Route exact path="/home" component={Home} />
       </Switch>

@@ -2,40 +2,45 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
 import { LinearProgress } from "@material-ui/core";
-import "../utils.js";
+import { Chart, Tooltip, CategoryScale, LinearScale, Title } from 'chart.js';
+import { Matrix, MatrixController } from 'chartjs-chart-matrix';
+
+// Chart.register(Tooltip, CategoryScale, LinearScale, Title, Matrix, MatrixController);
+// import "../utils.js";
 // import "../chartjs-chart-matrix.js"
 
 
-function isoDayInt(dt) {
-  let wd = dt.getDay(); // 0..6, from sunday
-  wd = (wd + 6) % 7 + 1; // 1..7 from monday
-  return wd; // string so it gets parsed
-}
+const HeatMap = () => {
 
-function isoDayOfWeek(dt) {
-  let wd = dt.getDay(); // 0..6, from sunday
-  wd = (wd + 6) % 7 + 1; // 1..7 from monday
-  return '' + wd; // string so it gets parsed
-}
-
-function generateData() {
-  const data = [];
-  for (let i=1; i <= 7; i++) {
-      for (let j=10; j <=22; j++) {
-          let dt = new Date(2020, 7, 7);
-          dt.setHours(j,0,0);
-          data.push({
-              x: isoDayOfWeek(new Date(2020, 6, i)),
-              y: dt,
-              d: dt,
-              v: Math.random() * 40
-          })
-      }
+  function isoDayInt(dt) {
+    let wd = dt.getDay(); // 0..6, from sunday
+    wd = (wd + 6) % 7 + 1; // 1..7 from monday
+    return wd; // string so it gets parsed
   }
-  return data;
-}
+  
+  function isoDayOfWeek(dt) {
+    let wd = dt.getDay(); // 0..6, from sunday
+    wd = (wd + 6) % 7 + 1; // 1..7 from monday
+    return '' + wd; // string so it gets parsed
+  }
+  
+  function generateData() {
+    const data = [];
+    for (let i=1; i <= 7; i++) {
+        for (let j=10; j <=22; j++) {
+            let dt = new Date(2020, 7, 7);
+            dt.setHours(j,0,0);
+            data.push({
+                x: isoDayOfWeek(new Date(2020, 6, i)),
+                y: dt,
+                d: dt,
+                v: Math.random() * 40
+            })
+        }
+    }
+    return data;
+  }
 
-const HeatMap = ({ numberOfEvents }) => {
     const [state, setState] = useState({
       type: 'matrix',
       data: null,
@@ -120,7 +125,7 @@ const HeatMap = ({ numberOfEvents }) => {
       };
       //gets all event data
       const eventData = await axios
-        .get("/api/event/eventInfo/0/" + numberOfEvents, config)
+        .get("/api/event/eventInfo/0/" + 50, config)
         .catch((err) => console.error(err));
       var ids = [];
       var starts = [];
@@ -135,6 +140,8 @@ const HeatMap = ({ numberOfEvents }) => {
         starts.push(eventInfo.eventstart);
         ends.push(eventInfo.eventend);
       });
+      console.log(starts);
+      console.log(ends);
 
       //getting event attendance
       let attendanceArr = [];
@@ -160,11 +167,9 @@ const HeatMap = ({ numberOfEvents }) => {
         for (j = startHour; j<= endHour; j++) {
           var day = isoDayInt(new Date(Date.parse(starts[i])));
           if(typeof(data[day][j].num) === 'undefined') {
-            console.log("hereeeeee");
             data[day][j].num = 1;
             data[day][j].totalAtt = attendanceArr[i];
           } else {
-            console.log("here");
             data[day][j].num += 1;
             data[day][j].totalAtt += attendanceArr[i];
           }
@@ -190,46 +195,45 @@ const HeatMap = ({ numberOfEvents }) => {
 
   
       // inserts into graph and updates state
-      const tableData = {
-        datasets: [{
-          label: 'My chart matrix',
-          data: generateData(),
-          backgroundColor(c) {
-            const value = c.dataset.data[c.dataIndex].v;
-            const alpha = (10 + value) / 60;
-            return window.Chart.helpers.color('green').alpha(alpha).rgbString();
-          },
-          borderColor(c) {
-            const value = c.dataset.data[c.dataIndex].v;
-            const alpha = (10 + value) / 60;
-            return window.Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
-          },
-          borderWidth: 1,
-          hoverBackgroundColor: 'yellow',
-          hoverBorderColor: 'yellowgreen',
-          width(c) {
-            const a = c.chart.chartArea || {};
-            const nt = c.chart.scales.x.ticks.length;
-            return (a.right - a.left) / nt - 3;
-          },
-          height(c) {
-            const a = c.chart.chartArea || {};
-            const nt = c.chart.scales.y.ticks.length;
-            return (a.bottom - a.top) / nt - 3;
-          }
-        }]
-      };
       // const tableData = {
-      //   labels: titles,
-      //   datasets: [
-      //     {
-      //       label: "Mean Points of Attendees",
-      //       data: attendanceArr,
-      //       borderWidth: 2,
-      //       backgroundColor: "#3E4857",
+      //   datasets: [{
+      //     label: 'My chart matrix',
+      //     data: generateData(),
+      //     backgroundColor(c) {
+      //       const value = c.dataset.data[c.dataIndex].v;
+      //       const alpha = (10 + value) / 60;
+      //       return window.Chart.helpers.color('green').alpha(alpha).rgbString();
+      //     },
+      //     borderColor(c) {
+      //       const value = c.dataset.data[c.dataIndex].v;
+      //       const alpha = (10 + value) / 60;
+      //       return window.Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
+      //     },
+      //     borderWidth: 1,
+      //     hoverBackgroundColor: 'yellow',
+      //     hoverBorderColor: 'yellowgreen',
+      //     width(c) {
+      //       const a = c.chart.chartArea || {};
+      //       const nt = c.chart.scales.x.ticks.length;
+      //       return (a.right - a.left) / nt - 3;
+      //     },
+      //     height(c) {
+      //       const a = c.chart.chartArea || {};
+      //       const nt = c.chart.scales.y.ticks.length;
+      //       return (a.bottom - a.top) / nt - 3;
       //     }
-      //   ],
+      //   }]
       // };
+      const tableData = {
+        datasets: [
+          {
+            label: "Mean Points of Attendees",
+            data: attendanceArr,
+            borderWidth: 2,
+            backgroundColor: "#3E4857",
+          }
+        ],
+      };
       setState({ ...state, data: tableData });
     };
   
