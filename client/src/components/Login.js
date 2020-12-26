@@ -9,7 +9,6 @@ import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   img: {
-    margin: "auto",
     display: "block",
     maxWidth: "90%",
     maxHeight: "90%",
@@ -31,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginLeft: theme.spacing(0),
     marginRight: theme.spacing(1),
-    width: 200,
   },
 }));
 
@@ -84,8 +82,7 @@ const Login = () => {
             setAlert(false);
           }}
           style={{
-            width: "50%",
-            marginTop: "10px",
+            width: "100%",
             fontSize: 20,
             textAlign: "center",
           }}
@@ -98,19 +95,16 @@ const Login = () => {
         direction="row"
         justify="space-around"
         alignItems="center"
-        style={{ height: "650px" }}
+        style={{ marginTop: "12%", marginLeft: "10%" }}
       >
         <Grid
-          container
           item
           xs={12}
           sm={6}
           alignItems="center"
-          direction="column"
           className={classes.item1}
         >
-          <div />
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", width: "80%" }}>
             <Typography variant="h2" align="center">
               Welcome,
             </Typography>
@@ -146,26 +140,19 @@ const Login = () => {
               variant="contained"
               color="secondary"
               size="large"
-              maxWidth="180px"
             >
               LOGIN
             </Button>
           </div>
         </Grid>
         <Grid
-          container
           item
           xs={12}
           sm={6}
-          direction="column"
           alignItems="center"
           className={classes.item2}
         >
-          <div />
-          <div>
             <Computers className={classes.img} />
-          </div>
-          <div />
         </Grid>
       </Grid>
     </div>
