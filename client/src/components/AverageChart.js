@@ -19,7 +19,7 @@ const AverageChart = ({ numberOfEvents }) => {
             scaleLabel: {
               display: true,
               labelString: "Points",
-              fontSize: 30,
+              fontSize: 15,
             },
           },
         ],
@@ -28,7 +28,7 @@ const AverageChart = ({ numberOfEvents }) => {
             scaleLabel: {
               display: true,
               labelString: "Event",
-              fontSize: 30,
+              fontSize: 15,
             },
           },
         ],
@@ -36,13 +36,13 @@ const AverageChart = ({ numberOfEvents }) => {
       title: {
         display: true,
         text: "Mean and Median Points Per Event",
-        fontSize: 40,
+        fontSize: 20,
       },
       legend: {
         display: true,
         position: "bottom",
         labels: {
-          fontSize: 17,
+          fontSize: 15,
         },
       },
     },

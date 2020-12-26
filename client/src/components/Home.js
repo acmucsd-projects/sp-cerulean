@@ -110,7 +110,7 @@ const Home = () => {
       <Grid container spacing={3} direction="row" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>              
-            <AverageChart numberOfEvents={10} />
+            <AverageChart numberOfEvents={5} />
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
