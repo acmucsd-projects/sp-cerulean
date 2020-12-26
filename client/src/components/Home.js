@@ -1,7 +1,7 @@
 import "date-fns";
 import React, { useContext } from "react";
-import { ReactComponent as Computers } from "./computers.svg";
-import { Grid, Paper, Box, Typography, TextField } from "@material-ui/core";
+// import { ReactComponent as Computers } from "./computers.svg";
+import { Grid, Paper, Box, Typography, TextField, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -41,17 +41,21 @@ const useStyles = makeStyles((theme) => ({
   },
   textField: {
     marginTop: theme.spacing(0),
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(),
     marginLeft: theme.spacing(0),
     marginRight: theme.spacing(1),
     width: 200,
+  },
+  divider: {
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(3),
   },
 }));
 
 const Home = () => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
-  const [type, setType] = React.useState("");
+  const [type, setType] = React.useState("10");
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2014-08-18T21:11:54")
   );
@@ -70,9 +74,7 @@ const Home = () => {
 
   return (
     <div>
-      <Grid container spacing={3} direction="row" alignItems="center">
-        <Grid item xs={12} sm={4}>
-          <Box
+      <Box
             fontWeight="fontWeightBold"
             fontSize={36}
             fontFamily="Nunito"
@@ -80,42 +82,42 @@ const Home = () => {
             style={{ padding: 10 }}
           >
             Event Attendance
-          </Box>
-          <Paper className={classes.paper}>tags</Paper>
+      </Box>
+      <Grid container spacing={3} direction="row" alignItems="center">
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>Heatmap</Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
-          <FormControl
-            variant="outlined"
-            className={classes.formControl}
-            style={{ minWidth: 280 }}
-          >
-            <Select
-              id="chart-type"
-              value={type}
-              onChange={handleChange}
-              displayEmpty
-              defaultValue={10}
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>Line Chart<br />
+            <FormControl
+              variant="outlined"
+              className={classes.formControl}
+              style={{ minWidth: 280 }}
             >
-              <MenuItem value={10}>Week In Quarter</MenuItem>
-              <MenuItem value={20}>Day of Week and Time</MenuItem>
-              <MenuItem value={30}>Time Since Event Annoucement</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Computers className={classes.img} />
+              <Select
+                id="chart-type"
+                value={type}
+                onChange={handleChange}
+                displayEmpty
+              >
+                <MenuItem value={10}>Week In Quarter</MenuItem>
+                <MenuItem value={20}>Day of Week and Time</MenuItem>
+                <MenuItem value={30}>Time Since Event Annoucement</MenuItem>
+              </Select>
+            </FormControl>
+          </Paper>
         </Grid>
       </Grid>
+      <Divider className={classes.divider} variant="middle" />
       <Grid container spacing={3} direction="row" alignItems="center">
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>              
+            <AverageChart numberOfEvents={10} />
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>pie chart
+          </Paper>
         </Grid>
       </Grid>
       <div style={{ width: "75%", marginTop: "2%" }}>
@@ -127,6 +129,7 @@ const Home = () => {
       <div style={{ width: "75%" }}>
         <HeatMap />
       </div>
+      <Divider className={classes.divider} variant="middle" />
       <Grid container spacing={3} direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
@@ -136,7 +139,7 @@ const Home = () => {
             textAlign="left"
             style={{ padding: 10 }}
           >
-            Predictions
+            DEPRECATED: <br />Predictions
           </Box>
           <Grid
             container
