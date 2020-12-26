@@ -5,7 +5,7 @@ import { LinearProgress } from "@material-ui/core";
 import { UserContext } from "../UserContext";
 
 const AverageChart = ({ numberOfEvents }) => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [state, setState] = useState({
     data: null,
     options: {
@@ -65,7 +65,7 @@ const AverageChart = ({ numberOfEvents }) => {
       return;
     }
 
-    eventData.data.map((eventInfo) => {
+    eventData.data.forEach((eventInfo) => {
       titles.push(eventInfo.title);
       ids.push(eventInfo.uuid);
     });
@@ -107,7 +107,7 @@ const AverageChart = ({ numberOfEvents }) => {
 
   return (
     <div className="chart">
-      {state.data == null && user.token == null ? (
+      {state.data == null ? (
         <Fragment>
           <LinearProgress />
           <Bar options={state.options} />

@@ -4,7 +4,7 @@ import axios from "axios";
 import { LinearProgress, MenuItem, Select } from "@material-ui/core";
 import { UserContext } from "../UserContext";
 
-const AverageChart = () => {
+const PieChart = () => {
   const { user } = useContext(UserContext);
   const [state, setState] = useState({
     data: null,
@@ -48,7 +48,7 @@ const AverageChart = () => {
       return;
     }
 
-    eventData.data.map((eventInfo) => {
+    eventData.data.forEach((eventInfo) => {
       switch (eventInfo.organization) {
         case "ACM":
           general.push(eventInfo);
@@ -109,7 +109,7 @@ const AverageChart = () => {
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      {state.data == null && user.token == null ? (
+      {state.data == null ? (
         <Fragment>
           <LinearProgress />
           <Pie options={state.options} />
@@ -139,4 +139,4 @@ const AverageChart = () => {
   );
 };
 
-export default AverageChart;
+export default PieChart;
