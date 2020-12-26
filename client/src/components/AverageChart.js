@@ -49,7 +49,7 @@ const AverageChart = ({ numberOfEvents }) => {
   });
 
   const getData = async () => {
-    //need to update token value
+    //gets token
     const config = {
       headers: {
         "x-auth-token": user.token,
