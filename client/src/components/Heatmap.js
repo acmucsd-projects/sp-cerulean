@@ -125,7 +125,7 @@ const HeatMap = () => {
       };
       //gets all event data
       const eventData = await axios
-        .get("/api/event/eventInfo/0/" + 50, config)
+        .get("/api/event/eventInfo/0/" + 100, config)
         .catch((err) => console.error(err));
       var ids = [];
       var starts = [];

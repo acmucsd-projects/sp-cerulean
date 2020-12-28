@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Helmet from "react-helmet";
 
-var __html = require('./TestMatrix.js');
+var __html = require('./Matrix.js');
 var template = { __html: __html };
 
 class TestChart extends Component {
