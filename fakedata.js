@@ -60,121 +60,124 @@ sleep = async(timeout) => {
 }
 
 /**
- * Generate randomized event start and end dates.
+ * Generate a randomized event date.
  *
- * @return An array with two strings representing the start and end dates.
+ * @return An event date.
  */
-randomEventStartEnd = () => {
-    const today = new Date();
+randomEventDate = () => {
+    const isWeekend = [true, false, false, false, false, true];
 
-    const startDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        Math.round(today.getDate() + (10 * Math.random())),
-        Math.round(8 + (16 * Math.random())),
-        15 * Math.round(4 * Math.random())
-    );
+    let date;
 
-    const endDate = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
-        startDate.getHours(),
-        startDate.getMinutes() + 15 * Math.round(1 + 8 * Math.random())
-    );
+    do {
+        date = new Date(
+            2020,
+            Math.floor(Math.random() * 6),
+            Math.floor(Math.random() * 28)
+        );
+    } while (isWeekend[date.getDay()]);
 
-    return [startDate.toISOString(), endDate.toISOString()];
+    return date;
 }
 
-fs.readFile(filename, "utf-8", async function(err, data) {
-    if (err) throw err;
-    const fakeData = JSON.parse(data);
+main = async () => {
+    fakeData = JSON.parse(fs.readFileSync(filename));
+    fakeDates = JSON.parse(fs.readFileSync("fake-dates.json"));
+    fakeTitles = JSON.parse(fs.readFileSync("fake-titles.json"));
 
-    fs.readFile("fake-dates.json", "utf-8", async function(err2, data2) {
-        if (err2) throw err2;
-        const fakeDates = JSON.parse(data2);
+    for (const user of fakeData.users) {
+        user.points = Math.floor(100 * Math.random()).toString();
+    }
 
-        for (const user of fakeData.users) {
-            user.points = Math.floor(100 * Math.random()).toString();
+    for (const ev of fakeData.events) {
+        const dateIndex = Math.floor(Math.random() * fakeDates.length);
+
+        const startDate = new Date(fakeDates[dateIndex].start);
+        const endDate = new Date(fakeDates[dateIndex].end);
+
+        const randomDate = randomEventDate();
+        for (const date of [startDate, endDate]) {
+            date.setFullYear(randomDate.getFullYear());
+            date.setMonth(randomDate.getMonth());
+            date.setDate(randomDate.getDate());
         }
+        ev.start = startDate.toISOString();
+        ev.end = endDate.toISOString();
 
-        for (const ev of fakeData.events) {
-            const dateIndex = Math.round(1 + Math.random() * (fakeDates.length - 3));
-            ev.start = new Date(fakeDates[dateIndex].start).toISOString();
-            ev.end = new Date(fakeDates[dateIndex].end).toISOString();
+        const titleIndex = Math.floor(Math.random() * fakeTitles.length);
+        ev.title = fakeTitles[titleIndex];
+    }
+
+    await dbAccess.connectToPG();
+
+    // DANGER: delete existing data before inserting fake data.
+    console.log("DELETING ALL DATA");
+    await dbAccess.db.query("DELETE FROM " + USER_TABLE);
+    await dbAccess.db.query("DELETE FROM " + EVENT_TABLE);
+    await dbAccess.db.query("DELETE FROM " + ATTENDANCE_TABLE);
+
+    // Ensure that all tables are empty before proceeding.
+    for (const table of [USER_TABLE, EVENT_TABLE, ATTENDANCE_TABLE]) {
+        if (!(await tableIsEmpty(dbAccess.db, table))) {
+            throw new Error(`Table '${table}' already contains data.`
+                + " Fake data will not be inserted.");
         }
+    }
 
-        await dbAccess.connectToPG();
+    for (const user of fakeData.users) {
+        const row = {
+            uuid: user.uuid,
+            email: user.email,
+            firstname: user.firstName,
+            lastname: user.lastName,
+            graduationyear: user.graduationYear.toString(),
+            major: user.major,
+            points: user.points,
+        };
 
-        /*
-        // DANGER: delete existing data before inserting fake data.
-        console.log("DELETING ALL DATA");
-        await dbAccess.db.query("DELETE FROM " + USER_TABLE);
-        await dbAccess.db.query("DELETE FROM " + EVENT_TABLE);
-        await dbAccess.db.query("DELETE FROM " + ATTENDANCE_TABLE);
-        */
+        await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
 
-        // Ensure that all tables are empty before proceeding.
-        for (const table of [USER_TABLE, EVENT_TABLE, ATTENDANCE_TABLE]) {
-            if (!(await tableIsEmpty(dbAccess.db, table))) {
-                throw new Error(`Table '${table}' already contains data.`
-                    + " Fake data will not be inserted.");
-            }
-        }
+        rateLimit(`user ${JSON.stringify(row, null, 2)}`);
+    }
 
-        for (const user of fakeData.users) {
-            const row = {
-                uuid: user.uuid,
-                email: user.email,
-                firstname: user.firstName,
-                lastname: user.lastName,
-                graduationyear: user.graduationYear.toString(),
-                major: user.major,
-                points: user.points,
-            };
+    for (const ev of fakeData.events) {
+        const row = {
+            uuid: ev.uuid,
+            eventstart: ev.start,
+            eventend: ev.end,
+            organization: ev.organization,
+            title: ev.title,
+            description: ev.description,
+            eventlocation: ev.location,
+        };
 
-            await dbAccess.db.query(...makeInsertQuery(USER_TABLE, row));
+        await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
 
-            rateLimit(`user ${JSON.stringify(row, null, 2)}`);
-        }
+        rateLimit(`event ${JSON.stringify(row, null, 2)}`);
+    }
 
-        for (const ev of fakeData.events) {
-            const row = {
-                uuid: ev.uuid,
-                eventstart: ev.start,
-                eventend: ev.end,
-                organization: ev.organization,
-                title: ev.title,
-                description: ev.description,
-                eventlocation: ev.location,
-            };
+    eventsByUuid = {};
+    for (const ev of fakeData.events) {
+        eventsByUuid[ev.uuid] = ev;
+    }
 
-            await dbAccess.db.query(...makeInsertQuery(EVENT_TABLE, row));
+    for (const attendance of fakeData.attendances) {
+        const timestamp = new Date(eventsByUuid[attendance.eventUuid].start);
+        timestamp.setMinutes(timestamp.getMinutes() + Math.round(5 * Math.random()));
 
-            rateLimit(`event ${JSON.stringify(row, null, 2)}`);
-        }
+        const row = {
+            user_id: attendance.userUuid,
+            event_id: attendance.eventUuid,
+            attendance_time: timestamp.toISOString(),
+            as_staff: attendance.asStaff.toString(),
+        };
 
-        eventsByUuid = {};
-        for (const ev of fakeData.events) {
-            eventsByUuid[ev.uuid] = ev;
-        }
+        await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
 
-        for (const attendance of fakeData.attendances) {
-            const timestamp = new Date(eventsByUuid[attendance.eventUuid].start);
-            timestamp.setMinutes(timestamp.getMinutes() + Math.round(5 * Math.random()));
+        rateLimit(`attendance ${JSON.stringify(row, null, 2)}`);
+    }
 
-            const row = {
-                user_id: attendance.userUuid,
-                event_id: attendance.eventUuid,
-                attendance_time: timestamp.toISOString(),
-                as_staff: attendance.asStaff.toString(),
-            };
+    console.log("Fake data inserted.");
+}
 
-            await dbAccess.db.query(...makeInsertQuery(ATTENDANCE_TABLE, row));
-
-            rateLimit(`attendance ${JSON.stringify(row, null, 2)}`);
-        }
-
-        console.log("Fake data inserted.");
-    });
-});
+main();
