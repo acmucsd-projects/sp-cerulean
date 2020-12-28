@@ -11,6 +11,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import TestChart from "./TestChart";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,6 +108,9 @@ const Home = () => {
           <Paper className={classes.paper}>chart</Paper>
         </Grid>
       </Grid>
+      {/* <div style={{ width: "75%" }}>
+        <TestChart/>
+      </div> */}
       <Grid container spacing={3} direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
