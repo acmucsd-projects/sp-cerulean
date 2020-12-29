@@ -10,7 +10,7 @@ import { Matrix, MatrixController } from 'chartjs-chart-matrix';
 // import "../chartjs-chart-matrix.js"
 
 
-const HeatMap = () => {
+const OldHeatMap = () => {
 
   function isoDayInt(dt) {
     let wd = dt.getDay(); // 0..6, from sunday
@@ -249,4 +249,4 @@ const HeatMap = () => {
     );
   };
   
-  export default HeatMap;
+  export default OldHeatMap;
