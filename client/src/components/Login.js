@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     maxWidth: "90%",
     maxHeight: "90%",
+    marginLeft: "10%",
   },
   item1: {
     order: 2,
@@ -95,16 +96,18 @@ const Login = () => {
         direction="row"
         justify="space-around"
         alignItems="center"
-        style={{ marginTop: "12%", marginLeft: "10%" }}
+        style={{ marginTop: "12%" }}
       >
         <Grid
           item
+          container
           xs={12}
           sm={6}
           alignItems="center"
+          direction="row"
           className={classes.item1}
         >
-          <div style={{ display: "flex", flexDirection: "column", width: "80%" }}>
+          <div style={{ display: "flex", flexDirection: "column", width: "80%", marginLeft:"10%" }}>
             <Typography variant="h2" align="center">
               Welcome,
             </Typography>
@@ -149,7 +152,9 @@ const Login = () => {
           item
           xs={12}
           sm={6}
+          container
           alignItems="center"
+          direction="row"
           className={classes.item2}
         >
             <Computers className={classes.img} />
