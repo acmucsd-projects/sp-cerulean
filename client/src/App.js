@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import Footer from "./components/Footer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { UserContext } from "./UserContext";
@@ -46,6 +47,7 @@ const App = () => {
                 <Route exact path="/" component={Login} />
                 <Route path="/home" component={Home} />
               </Switch>
+              <Footer />
             </UserContext.Provider>
           </div>
         </React.Fragment>
