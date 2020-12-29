@@ -3,6 +3,7 @@ import { Pie } from "react-chartjs-2";
 import axios from "axios";
 import { LinearProgress, MenuItem, Select } from "@material-ui/core";
 import { UserContext } from "../UserContext";
+import { sub, formatISO } from "date-fns";
 
 const PieChart = () => {
   const { user } = useContext(UserContext);
@@ -23,9 +24,87 @@ const PieChart = () => {
       },
     },
     numberOfEvents: 50,
+    timePeriod: "week",
+    displayType: "number",
   });
 
-  const getData = async () => {
+  const getDataNumber = async () => {
+    //gets token
+    const config = {
+      headers: {
+        "x-auth-token": user.token,
+      },
+    };
+    //gets all event data
+    const eventData = await axios
+      .get("/api/event/eventInfo/0/" + state.numberOfEvents, config)
+      .catch((err) => console.error(err));
+
+    var general = [];
+    var hack = [];
+    var innovate = [];
+    var ai = [];
+    var cyber = [];
+    var design = [];
+
+    if (eventData === undefined) {
+      return;
+    }
+
+    eventData.data.forEach((eventInfo) => {
+      switch (eventInfo.organization) {
+        case "ACM":
+          general.push(eventInfo);
+          break;
+        case "AI":
+          ai.push(eventInfo);
+          break;
+        case "Hack":
+          hack.push(eventInfo);
+          break;
+        case "Design":
+          design.push(eventInfo);
+          break;
+        case "Cyber":
+          cyber.push(eventInfo);
+          break;
+        case "Innovate":
+          innovate.push(eventInfo);
+          break;
+        default:
+          general.push(eventInfo);
+          break;
+      }
+    });
+
+    //inserts into graph and updates state
+    const tableData = {
+      datasets: [
+        {
+          data: [
+            general.length,
+            hack.length,
+            innovate.length,
+            ai.length,
+            cyber.length,
+            design.length,
+          ],
+          backgroundColor: [
+            "rgb(68, 68, 68)",
+            "rgb(255, 168, 95)",
+            "rgb(126, 109, 246)",
+            "rgb(255, 112, 114)",
+            "rgb(59, 192, 192)",
+            "rgb(240, 130, 160)",
+          ],
+        },
+      ],
+      labels: ["General", "Hack", "Innovate", "AI", "Cyber", "Design"],
+    };
+    setState({ ...state, data: tableData });
+  };
+
+  const getDataTime = async () => {
     //gets token
     const config = {
       headers: {
@@ -102,8 +181,10 @@ const PieChart = () => {
   };
 
   useEffect(() => {
-    getData();
-  }, [state.numberOfEvents]);
+    getDataNumber();
+  }, [state.numberOfEvents, state.displayType]);
+
+  useEffect(() => {}, [state.timePeriod, state.displayType]);
 
   return (
     <div
