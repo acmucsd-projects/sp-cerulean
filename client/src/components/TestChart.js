@@ -74,35 +74,23 @@ class TestChart extends Component {
               };
               //gets all event data
               const eventData = await axios
-                .get("/api/event/eventInfo/0/" + 10, config)
+                .get("/api/event/eventInfoDateRange/2020-01-01T00%3A00%3A00.000Z/2020-07-01T00%3A00%3A00.000Z", config)
                 .catch((err) => console.error(err));
               var ids = [];
               var starts = [];
               var ends = [];
+              var atten = [];
         
               if (eventData === undefined) {
                 return;
               }
 
-              console.log("received event data:");
-              console.log(eventData);
-
               eventData.data.map((eventInfo) => {
                 ids.push(eventInfo.uuid);
                 starts.push(eventInfo.eventstart);
                 ends.push(eventInfo.eventend);
+                atten.push(eventInfo.attendances);
               });
-              console.log(starts);
-              console.log(ends);
-        
-              //getting event attendance
-              let attendanceArr = [];
-              for (var i = 0; i < ids.length; i++) {
-                const pointData = await axios
-                  .get("/api/event/eventAttend/" + ids[i], config)
-                  .catch((err) => console.error(err));
-                  attendanceArr.push(pointData.data.numberOfAttendances);
-              }
         
               // initialize the data array, could be done better.
               // Data [day of the week (1-7)][hour (0-23)]
@@ -121,75 +109,146 @@ class TestChart extends Component {
                   var day = isoDayInt(new Date(Date.parse(starts[i])));
                   if(typeof(data[day][j].num) === 'undefined') {
                     data[day][j].num = 1;
-                    data[day][j].totalAtt = attendanceArr[i];
+                    data[day][j].totalAtt = atten[i];
                   } else {
                     data[day][j].num += 1;
-                    data[day][j].totalAtt += attendanceArr[i];
+                    data[day][j].totalAtt += atten[i];
                   }
                 }
               }
-              console.log(data);
               const graphData = [];
               for (i = 1; i < data.length; i++) {
                 for (j = 0; j < data[1].length; j++) {
+                  let dt = new Date(2020, 7, 7);
+                  dt.setHours(j,0,0);
                   if (typeof(data[i][j].num)  !== 'undefined') {
                     graphData.push({
-                      x: i,
-                      y: j,
-                      d: j,
+                      x: i.toString(),
+                      y: dt,
+                      d: dt,
                       v: data[i][j].totalAtt / data[i][j].num,
                       n: data[i][j].num
                     })
                   } 
-                  else if (j>= 9 && j <=15) {
+                  else if (j>= 12 && j <=24) {
                     graphData.push({
-                      x: i,
-                      y: j,
-                      d: j,
+                      x: i.toString(),
+                      y: dt,
+                      d: dt,
                       v: 0,
                       n: 0
                     })
                   }
                 }
               }
-        
-              console.log(graphData);
-        
-          
-              // inserts into graph and updates state
-              // const tableData = {
-              //   datasets: [{
-              //     label: 'My chart matrix',
-              //     data: generateData(),
-              //     backgroundColor(c) {
-              //       const value = c.dataset.data[c.dataIndex].v;
-              //       const alpha = (10 + value) / 60;
-              //       return window.Chart.helpers.color('green').alpha(alpha).rgbString();
-              //     },
-              //     borderColor(c) {
-              //       const value = c.dataset.data[c.dataIndex].v;
-              //       const alpha = (10 + value) / 60;
-              //       return window.Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
-              //     },
-              //     borderWidth: 1,
-              //     hoverBackgroundColor: 'yellow',
-              //     hoverBorderColor: 'yellowgreen',
-              //     width(c) {
-              //       const a = c.chart.chartArea || {};
-              //       const nt = c.chart.scales.x.ticks.length;
-              //       return (a.right - a.left) / nt - 3;
-              //     },
-              //     height(c) {
-              //       const a = c.chart.chartArea || {};
-              //       const nt = c.chart.scales.y.ticks.length;
-              //       return (a.bottom - a.top) / nt - 3;
-              //     }
-              //   }]
-              // };
-              // window.myMatrix.data.datasets[0].data = graphData;
-              // window.myMatrix.update();
-              console.log(window.myMatrix.data.datasets[0].data);
+              makeGraph(graphData);
             };
+
+            function makeGraph(graphData) {
+              Chart.defaults.fontSize = 12;
+              const ctx = document.getElementById('chart-area').getContext('2d');
+              window.myMatrix = new Chart(ctx, {
+                  type: 'matrix',
+                  data: {
+                    datasets: [{
+                      label: 'My chart matrix',
+                      data: graphData,
+                      backgroundColor(c) {
+                        const value = c.dataset.data[c.dataIndex].v;
+                        const alpha = (10 + value) / 60;
+                        return Chart.helpers.color('green').alpha(alpha).rgbString();
+                      },
+                      borderColor(c) {
+                        const value = c.dataset.data[c.dataIndex].v;
+                        const alpha = (10 + value) / 60;
+                        return Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
+                      },
+                      borderWidth: 1,
+                      hoverBackgroundColor: 'yellow',
+                                  hoverBorderColor: 'yellowgreen',
+                                  width(c) {
+                        const a = c.chart.chartArea || {};
+                        const nt = c.chart.scales.x.ticks.length;
+                        return (a.right - a.left) / nt - 3;
+                      },
+                      height(c) {
+                        const a = c.chart.chartArea || {};
+                        const nt = c.chart.scales.y.ticks.length;
+                        return (a.bottom - a.top) / nt - 3;
+                      }
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                      display: false
+                    },
+                    tooltips: {
+                      displayColors: false,
+                      callbacks: {
+                        title() {
+                          return '';
+                        },
+                        label(context) {
+                          const v = context.dataset.data[context.dataIndex];
+                          return ['v: ' + v.v.toFixed(2),'n: ' + v.n];
+                        }
+                      }
+                    },
+                    scales: {
+                      y: {
+                        type: 'time',
+                        left: 'left',
+                        offset: true,
+                        time: {
+                          unit: 'hour',
+                          round: 'hour',
+                          // displayFormats: {
+                          //     hour: 'hA'
+                          // }
+                        },
+                        ticks: {
+                          maxRotation: 0,
+                          autoSkip: true,
+                          padding: 1
+                        },
+                        gridLines: {
+                          display: false,
+                          drawBorder: false,
+                          tickMarkLength: 0,
+                        },
+                        scaleLabel: {
+                          display: true,
+                          fontSize: 15,
+                          padding: 0
+                        }
+                      },
+                      x: {
+                        type: 'time',
+                        position: 'top',
+                        offset: true,
+                        time: {
+                          unit: 'day',
+                          parser: 'i',
+                          displayFormats: {
+                              day: 'iiii'
+                          }
+                        },
+                        ticks: {
+                            source: 'data',
+                            padding: 16
+                        },
+                        gridLines: {
+                          display: false,
+                          drawBorder: false,
+                          tickMarkLength: 0
+                        }
+                      }
+                    }
+                  }        
+              });
+            }
 
             window.onload = function(done) {
               addScript(chartjsUrl, () => {
@@ -197,109 +256,6 @@ class TestChart extends Component {
                   addScript(remoteUrl, () => {
                     addScript(axiosUrl, () => {
                       getData();
-                      Chart.defaults.fontSize = 12;
-                      const ctx = document.getElementById('chart-area').getContext('2d');
-                      window.myMatrix = new Chart(ctx, {
-                          type: 'matrix',
-                          data: {
-                            datasets: [{
-                              label: 'My chart matrix',
-                              data: generateData(),
-                              backgroundColor(c) {
-                                const value = c.dataset.data[c.dataIndex].v;
-                                const alpha = (10 + value) / 60;
-                                return Chart.helpers.color('green').alpha(alpha).rgbString();
-                              },
-                              borderColor(c) {
-                                const value = c.dataset.data[c.dataIndex].v;
-                                const alpha = (10 + value) / 60;
-                                return Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
-                              },
-                              borderWidth: 1,
-                              hoverBackgroundColor: 'yellow',
-                                          hoverBorderColor: 'yellowgreen',
-                                          width(c) {
-                                const a = c.chart.chartArea || {};
-                                const nt = c.chart.scales.x.ticks.length;
-                                return (a.right - a.left) / nt - 3;
-                              },
-                              height(c) {
-                                const a = c.chart.chartArea || {};
-                                const nt = c.chart.scales.y.ticks.length;
-                                return (a.bottom - a.top) / nt - 3;
-                              }
-                            }]
-                          },
-                          options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            legend: {
-                              display: false
-                            },
-                            tooltips: {
-                              displayColors: false,
-                              callbacks: {
-                                title() {
-                                  return '';
-                                },
-                                label(context) {
-                                  const v = context.dataset.data[context.dataIndex];
-                                  return ['v: ' + v.v.toFixed(2)];
-                                }
-                              }
-                            },
-                            scales: {
-                              y: {
-                                type: 'time',
-                                left: 'left',
-                                offset: true,
-                                time: {
-                                  unit: 'hour',
-                                  round: 'hour',
-                                  // displayFormats: {
-                                  //     hour: 'hA'
-                                  // }
-                                },
-                                ticks: {
-                                  maxRotation: 0,
-                                  autoSkip: true,
-                                  padding: 1
-                                },
-                                gridLines: {
-                                  display: false,
-                                  drawBorder: false,
-                                  tickMarkLength: 0,
-                                },
-                                scaleLabel: {
-                                  display: true,
-                                  fontSize: 15,
-                                  padding: 0
-                                }
-                              },
-                              x: {
-                                type: 'time',
-                                position: 'top',
-                                offset: true,
-                                time: {
-                                  unit: 'day',
-                                  parser: 'i',
-                                  displayFormats: {
-                                      day: 'iiii'
-                                  }
-                                },
-                                ticks: {
-                                    source: 'data',
-                                    padding: 16
-                                },
-                                gridLines: {
-                                  display: false,
-                                  drawBorder: false,
-                                  tickMarkLength: 0
-                                }
-                              }
-                            }
-                          }        
-                      });
                     }, loadError);
                   }, loadError);
                 }, loadError);
