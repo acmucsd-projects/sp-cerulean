@@ -1,9 +1,9 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import axios from "axios";
-import { LinearProgress, MenuItem, Select } from "@material-ui/core";
+import { MenuItem, Select } from "@material-ui/core";
 import { UserContext } from "../UserContext";
-import { sub, formatISO } from "date-fns";
+import { sub } from "date-fns";
 
 const PieChart = () => {
   const { user } = useContext(UserContext);
@@ -24,7 +24,7 @@ const PieChart = () => {
       },
     },
     numberOfEvents: 50,
-    timePeriod: "week",
+    timePeriod: "1 week",
     displayType: "number",
   });
 
@@ -112,8 +112,39 @@ const PieChart = () => {
       },
     };
     //gets all event data
+    const endDate = new Date("July 1, 2020 00:00:00");
+    var startDate;
+    switch (state.timePeriod) {
+      case "1 week":
+        startDate = sub(endDate, { weeks: 1 });
+        break;
+      case "1 month":
+        startDate = sub(endDate, { months: 1 });
+        break;
+      case "3 months":
+        startDate = sub(endDate, { months: 3 });
+        break;
+      case "6 months":
+        startDate = sub(endDate, { months: 6 });
+        break;
+      case "1 year":
+        startDate = sub(endDate, { years: 1 });
+        break;
+      default:
+        break;
+    }
+
+    const encodedEndDate = encodeURIComponent(endDate.toISOString());
+    const encodedStartDate = encodeURIComponent(startDate.toISOString());
+
     const eventData = await axios
-      .get("/api/event/eventInfo/0/" + state.numberOfEvents, config)
+      .get(
+        "/api/event/eventInfoDateRangeWithoutAttendance/" +
+          encodedStartDate +
+          "/" +
+          encodedEndDate,
+        config
+      )
       .catch((err) => console.error(err));
 
     var general = [];
@@ -181,41 +212,72 @@ const PieChart = () => {
   };
 
   useEffect(() => {
-    getDataNumber();
+    if (state.displayType === "number") {
+      getDataNumber();
+    }
   }, [state.numberOfEvents, state.displayType]);
 
-  useEffect(() => {}, [state.timePeriod, state.displayType]);
+  useEffect(() => {
+    if (state.displayType === "time") {
+      getDataTime();
+    }
+  }, [state.timePeriod, state.displayType]);
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      {state.data == null ? (
-        <Fragment>
-          <LinearProgress />
-          <Pie options={state.options} />
-        </Fragment>
-      ) : (
-        <Pie data={state.data} options={state.options} />
-      )}
-      <Select
-        id="chart-type"
-        value={state.numberOfEvents}
-        onChange={(e) => {
-          setState({ ...state, numberOfEvents: e.target.value });
-        }}
+    <div className="chart">
+      <Pie data={state.data} options={state.options} />
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "2%" }}
       >
-        <MenuItem value={10}>10 Events</MenuItem>
-        <MenuItem value={20}>20 Events</MenuItem>
-        <MenuItem value={30}>30 Events</MenuItem>
-        <MenuItem value={40}>40 Events</MenuItem>
-        <MenuItem value={50}>50 Events</MenuItem>
-        <MenuItem value={60}>60 Events</MenuItem>
-        <MenuItem value={70}>70 Events</MenuItem>
-        <MenuItem value={80}>80 Events</MenuItem>
-        <MenuItem value={90}>90 Events</MenuItem>
-        <MenuItem value={100}>100 Events</MenuItem>
-      </Select>
+        <Select
+          id="chart-type"
+          value={state.displayType}
+          style={{ marginRight: "5%" }}
+          onChange={(e) => {
+            setState({ ...state, displayType: e.target.value });
+          }}
+        >
+          <MenuItem value={"number"}>Number Of Events</MenuItem>
+          <MenuItem value={"time"}>Time Period</MenuItem>
+        </Select>
+        {state.displayType === "number" ? (
+          <Select
+            id="chart-type"
+            value={state.numberOfEvents}
+            onChange={(e) => {
+              setState({
+                ...state,
+                numberOfEvents: e.target.value,
+              });
+            }}
+          >
+            <MenuItem value={10}>10 Events</MenuItem>
+            <MenuItem value={20}>20 Events</MenuItem>
+            <MenuItem value={30}>30 Events</MenuItem>
+            <MenuItem value={40}>40 Events</MenuItem>
+            <MenuItem value={50}>50 Events</MenuItem>
+            <MenuItem value={60}>60 Events</MenuItem>
+            <MenuItem value={70}>70 Events</MenuItem>
+            <MenuItem value={80}>80 Events</MenuItem>
+            <MenuItem value={90}>90 Events</MenuItem>
+            <MenuItem value={100}>100 Events</MenuItem>
+          </Select>
+        ) : (
+          <Select
+            id="chart-type"
+            value={state.timePeriod}
+            onChange={(e) => {
+              setState({ ...state, timePeriod: e.target.value });
+            }}
+          >
+            <MenuItem value={"1 week"}>1 week</MenuItem>
+            <MenuItem value={"1 month"}>1 month</MenuItem>
+            <MenuItem value={"3 months"}>3 months</MenuItem>
+            <MenuItem value={"6 months"}>6 months</MenuItem>
+            <MenuItem value={"1 year"}>1 year</MenuItem>
+          </Select>
+        )}
+      </div>
     </div>
   );
 };
