@@ -81,7 +81,7 @@ const Home = () => {
           >
             Event Attendance
       </Box>
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Heatmap</Paper>
         </Grid>
@@ -90,7 +90,6 @@ const Home = () => {
             <FormControl
               variant="outlined"
               className={classes.formControl}
-              style={{ minWidth: 280 }}
             >
               <Select
                 id="chart-type"
@@ -107,7 +106,7 @@ const Home = () => {
         </Grid>
       </Grid>
       <Divider className={classes.divider} variant="middle" />
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>              
             <AverageChart numberOfEvents={5} />
@@ -119,7 +118,7 @@ const Home = () => {
         </Grid>
       </Grid>
       <Divider className={classes.divider} variant="middle" />
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
             fontWeight="fontWeightBold"
@@ -200,7 +199,7 @@ const Home = () => {
       >
         Recommendations
       </Box>
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Event 1</Paper>
         </Grid>
