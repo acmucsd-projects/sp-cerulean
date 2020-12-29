@@ -65,7 +65,7 @@ sleep = async(timeout) => {
  * @return An event date.
  */
 randomEventDate = () => {
-    const isWeekend = [true, false, false, false, false, true];
+    const isWeekend = [true, false, false, false, false, false, true];
 
     let date;
 
