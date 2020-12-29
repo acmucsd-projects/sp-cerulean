@@ -209,21 +209,5 @@ const Home = () => {
       </Grid>
     </div>
   );
-
-  //   return (
-  //     <div>
-  //       <Grid container spacing={3} direction="row" alignItems="center">
-  //         <Grid item xs={12} sm={4}>
-  //           <Paper className={classes.paper}>1</Paper>
-  //         </Grid>
-  //         <Grid item xs={12} sm={4}>
-  //           <Paper className={classes.paper}>2</Paper>
-  //         </Grid>
-  //         <Grid item xs={12} sm={4}>
-  //           <Computers className={classes.img} />
-  //         </Grid>
-  //       </Grid>
-  //     </div>
-  //   );
 };
 export default Home;
