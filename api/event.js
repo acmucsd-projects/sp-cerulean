@@ -59,6 +59,30 @@ router.get("/eventInfo/:startIndex/:limit", auth, async (req, res) => {
 });
 
 /**
+ * GET route which returns a range of events within a time interval.
+ *
+ * @param startDate The start of the time interval.
+ * @param endDate The end of the time interval.
+ * @returns A JSON array with the requested event information and attendance counts.
+ */
+router.get("/eventInfoDateRange/:startDate/:endDate", auth, async (req, res) => {
+  const eventQueryString = "SELECT * FROM eventtable WHERE eventstart BETWEEN $1 AND $2 ORDER BY eventstart";
+  const attendanceQueryString = "SELECT COUNT(*) FROM attendance WHERE event_id = $1";
+
+  try {
+    const events = (await db.query(eventQueryString, [req.params.startDate, req.params.endDate])).rows;
+    for (const ev of events) {
+      const attendanceCount = parseInt((await db.query(attendanceQueryString, [ev.uuid])).rows[0].count);
+      ev.attendances = attendanceCount;
+    }
+    res.status(200).json(events);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("There was an error");
+  }
+})
+
+/**
  * GET route which returns an event's attendees' mean and median number of points.
  *
  * @param eventId The ID of the event.
