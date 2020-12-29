@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import axios from "axios";
-import { MenuItem, Select } from "@material-ui/core";
+import { ListSubheader, MenuItem, Select } from "@material-ui/core";
 import { UserContext } from "../UserContext";
 import { sub } from "date-fns";
 
@@ -23,9 +23,7 @@ const PieChart = () => {
         },
       },
     },
-    numberOfEvents: 50,
-    timePeriod: "1 week",
-    displayType: "number",
+    eventPeriod: "1 month",
   });
 
   const getDataNumber = async () => {
@@ -37,7 +35,7 @@ const PieChart = () => {
     };
     //gets all event data
     const eventData = await axios
-      .get("/api/event/eventInfo/0/" + state.numberOfEvents, config)
+      .get("/api/event/eventInfo/0/" + state.eventPeriod, config)
       .catch((err) => console.error(err));
 
     var general = [];
@@ -114,7 +112,7 @@ const PieChart = () => {
     //gets all event data
     const endDate = new Date("July 1, 2020 00:00:00");
     var startDate;
-    switch (state.timePeriod) {
+    switch (state.eventPeriod) {
       case "1 week":
         startDate = sub(endDate, { weeks: 1 });
         break;
@@ -212,16 +210,12 @@ const PieChart = () => {
   };
 
   useEffect(() => {
-    if (state.displayType === "number") {
+    if (typeof state.eventPeriod === "number") {
       getDataNumber();
-    }
-  }, [state.numberOfEvents, state.displayType]);
-
-  useEffect(() => {
-    if (state.displayType === "time") {
+    } else if (typeof state.eventPeriod === "string") {
       getDataTime();
     }
-  }, [state.timePeriod, state.displayType]);
+  }, [state.eventPeriod]);
 
   return (
     <div className="chart">
@@ -231,52 +225,23 @@ const PieChart = () => {
       >
         <Select
           id="chart-type"
-          value={state.displayType}
-          style={{ marginRight: "5%" }}
+          value={state.eventPeriod}
           onChange={(e) => {
-            setState({ ...state, displayType: e.target.value });
+            setState({ ...state, eventPeriod: e.target.value });
           }}
         >
-          <MenuItem value={"number"}>Number Of Events</MenuItem>
-          <MenuItem value={"time"}>Time Period</MenuItem>
+          <ListSubheader>Number of Events</ListSubheader>
+          <MenuItem value={25}>25 Events</MenuItem>
+          <MenuItem value={50}>50 Events</MenuItem>
+          <MenuItem value={75}>75 Events</MenuItem>
+          <MenuItem value={100}>100 Events</MenuItem>
+          <ListSubheader>Time Period</ListSubheader>
+          <MenuItem value={"1 week"}>1 week</MenuItem>
+          <MenuItem value={"1 month"}>1 month</MenuItem>
+          <MenuItem value={"3 months"}>3 months</MenuItem>
+          <MenuItem value={"6 months"}>6 months</MenuItem>
+          <MenuItem value={"1 year"}>1 year</MenuItem>
         </Select>
-        {state.displayType === "number" ? (
-          <Select
-            id="chart-type"
-            value={state.numberOfEvents}
-            onChange={(e) => {
-              setState({
-                ...state,
-                numberOfEvents: e.target.value,
-              });
-            }}
-          >
-            <MenuItem value={10}>10 Events</MenuItem>
-            <MenuItem value={20}>20 Events</MenuItem>
-            <MenuItem value={30}>30 Events</MenuItem>
-            <MenuItem value={40}>40 Events</MenuItem>
-            <MenuItem value={50}>50 Events</MenuItem>
-            <MenuItem value={60}>60 Events</MenuItem>
-            <MenuItem value={70}>70 Events</MenuItem>
-            <MenuItem value={80}>80 Events</MenuItem>
-            <MenuItem value={90}>90 Events</MenuItem>
-            <MenuItem value={100}>100 Events</MenuItem>
-          </Select>
-        ) : (
-          <Select
-            id="chart-type"
-            value={state.timePeriod}
-            onChange={(e) => {
-              setState({ ...state, timePeriod: e.target.value });
-            }}
-          >
-            <MenuItem value={"1 week"}>1 week</MenuItem>
-            <MenuItem value={"1 month"}>1 month</MenuItem>
-            <MenuItem value={"3 months"}>3 months</MenuItem>
-            <MenuItem value={"6 months"}>6 months</MenuItem>
-            <MenuItem value={"1 year"}>1 year</MenuItem>
-          </Select>
-        )}
       </div>
     </div>
   );
