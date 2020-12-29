@@ -14,6 +14,7 @@ import {
 import { UserContext } from "../UserContext";
 import { Redirect } from "react-router-dom";
 import AverageChart from "./AverageChart";
+import PieChart from "./PieChart";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const classes = useStyles();
   const [type, setType] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState(
@@ -116,7 +117,10 @@ const Home = () => {
           <Paper className={classes.paper}>chart</Paper>
         </Grid>
       </Grid>
-      <div style={{ width: "75%" }}>
+      <div style={{ width: "75%", marginTop: "2%" }}>
+        <PieChart />
+      </div>
+      <div style={{ width: "75%", marginTop: "2%" }}>
         <AverageChart numberOfEvents={10} />
       </div>
       <Grid container spacing={3} direction="row" alignItems="center">

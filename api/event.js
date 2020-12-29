@@ -12,18 +12,22 @@ router.get("/eventAttend/:eventId", auth, async (req, res) => {
   let attendanceCount = 0;
   let staffMembers = 0;
   try {
-    db.query("SELECT * FROM attendance WHERE event_id = $1", [req.params.eventId], (error, response) => {
-      response.rows.forEach((value) => {
-        attendanceCount++;
-        if (value.asstaff === "true") {
-          staffMembers++;
-        }
-      });
-      res.status(200).json({
-        numberOfAttendances: attendanceCount,
-        staffMembers: staffMembers,
-      });
-    });
+    db.query(
+      "SELECT * FROM attendance WHERE event_id = $1",
+      [req.params.eventId],
+      (error, response) => {
+        response.rows.forEach((value) => {
+          attendanceCount++;
+          if (value.asstaff === "true") {
+            staffMembers++;
+          }
+        });
+        res.status(200).json({
+          numberOfAttendances: attendanceCount,
+          staffMembers: staffMembers,
+        });
+      }
+    );
   } catch (err) {
     console.error(err);
     res.status(500).send("There was an error");
@@ -37,7 +41,8 @@ router.get("/eventAttend/:eventId", auth, async (req, res) => {
  * @returns A JSON array with the requested events.
  */
 router.get("/eventInfo/:startIndex/:limit", auth, async (req, res) => {
-  const queryString = "SELECT * FROM eventtable ORDER BY eventstart, uuid LIMIT $1 OFFSET $2";
+  const queryString =
+    "SELECT * FROM eventtable ORDER BY eventstart, uuid LIMIT $1 OFFSET $2";
 
   try {
     const startIndex = parseInt(req.params.startIndex, 10);
@@ -48,10 +53,13 @@ router.get("/eventInfo/:startIndex/:limit", auth, async (req, res) => {
       return;
     }
 
-    db.query(queryString, [req.params.limit, req.params.startIndex], (error, response) => {
-      res.status(200).json(response.rows);
-    });
-
+    db.query(
+      queryString,
+      [req.params.limit, req.params.startIndex],
+      (error, response) => {
+        res.status(200).json(response.rows);
+      }
+    );
   } catch (err) {
     console.error(err);
     res.status(500).send("There was an error");
@@ -65,22 +73,63 @@ router.get("/eventInfo/:startIndex/:limit", auth, async (req, res) => {
  * @param endDate The end of the time interval.
  * @returns A JSON array with the requested event information and attendance counts.
  */
-router.get("/eventInfoDateRange/:startDate/:endDate", auth, async (req, res) => {
-  const eventQueryString = "SELECT * FROM eventtable WHERE eventstart BETWEEN $1 AND $2 ORDER BY eventstart";
-  const attendanceQueryString = "SELECT COUNT(*) FROM attendance WHERE event_id = $1";
+router.get(
+  "/eventInfoDateRange/:startDate/:endDate",
+  auth,
+  async (req, res) => {
+    const eventQueryString =
+      "SELECT * FROM eventtable WHERE eventstart BETWEEN $1 AND $2 ORDER BY eventstart";
+    const attendanceQueryString =
+      "SELECT COUNT(*) FROM attendance WHERE event_id = $1";
 
-  try {
-    const events = (await db.query(eventQueryString, [req.params.startDate, req.params.endDate])).rows;
-    for (const ev of events) {
-      const attendanceCount = parseInt((await db.query(attendanceQueryString, [ev.uuid])).rows[0].count);
-      ev.attendances = attendanceCount;
+    try {
+      const events = (
+        await db.query(eventQueryString, [
+          req.params.startDate,
+          req.params.endDate,
+        ])
+      ).rows;
+      for (const ev of events) {
+        const attendanceCount = parseInt(
+          (await db.query(attendanceQueryString, [ev.uuid])).rows[0].count
+        );
+        ev.attendances = attendanceCount;
+      }
+      res.status(200).json(events);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("There was an error");
     }
-    res.status(200).json(events);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("There was an error");
   }
-})
+);
+
+/**
+ * GET route which returns a range of events within a time interval.
+ *
+ * @param startDate The start of the time interval.
+ * @param endDate The end of the time interval.
+ * @returns A JSON array with the requested event information and attendance counts.
+ */
+router.get(
+  "/eventInfoDateRangeWithoutAttendance/:startDate/:endDate",
+  auth,
+  async (req, res) => {
+    const eventQueryString =
+      "SELECT * FROM eventtable WHERE eventstart BETWEEN $1 AND $2 ORDER BY eventstart";
+    try {
+      const events = (
+        await db.query(eventQueryString, [
+          req.params.startDate,
+          req.params.endDate,
+        ])
+      ).rows;
+      res.status(200).json(events);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("There was an error");
+    }
+  }
+);
 
 /**
  * GET route which returns an event's attendees' mean and median number of points.
@@ -89,8 +138,9 @@ router.get("/eventInfoDateRange/:startDate/:endDate", auth, async (req, res) => 
  * @returns A JSON object with the mean and median point values.
  */
 router.get("/averagePoints/:eventId", auth, async (req, res) => {
-  const queryString = "WITH attendee (uuid) AS (SELECT (user_id) FROM attendance WHERE event_id = $1)"
-    + " SELECT (points) FROM usertable WHERE uuid IN (SELECT * FROM attendee)";
+  const queryString =
+    "WITH attendee (uuid) AS (SELECT (user_id) FROM attendance WHERE event_id = $1)" +
+    " SELECT (points) FROM usertable WHERE uuid IN (SELECT * FROM attendee)";
 
   try {
     db.query(queryString, [req.params.eventId], (error, response) => {
@@ -98,7 +148,7 @@ router.get("/averagePoints/:eventId", auth, async (req, res) => {
         throw error;
       }
 
-      const points = response.rows.map(row => parseInt(row.points));
+      const points = response.rows.map((row) => parseInt(row.points));
 
       if (points.length === 0) {
         res.status(200).json({
@@ -113,16 +163,16 @@ router.get("/averagePoints/:eventId", auth, async (req, res) => {
         const mean = points.reduce((a, b) => a + b, 0) / points.length;
 
         const middleIndex = Math.floor(points.length / 2);
-        const median = (points.length % 2 == 0)
-          ? (points[middleIndex] + points[middleIndex + 1]) / 2
-          : points[middleIndex];
+        const median =
+          points.length % 2 == 0
+            ? (points[middleIndex] + points[middleIndex + 1]) / 2
+            : points[middleIndex];
 
         res.status(200).json({
           meanPoints: mean,
           medianPoints: median,
-        })
+        });
       }
-
     });
   } catch (err) {
     console.error(err);
