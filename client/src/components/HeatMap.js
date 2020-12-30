@@ -5,7 +5,7 @@ var __html = require('./Matrix.js');
 var template = { __html: __html };
 
 
-class TestChart extends Component {
+class HeatMap extends Component {
   render() {
     return (
       <>
@@ -91,6 +91,7 @@ class TestChart extends Component {
                 ends.push(eventInfo.eventend);
                 atten.push(eventInfo.attendances);
               });
+
         
               // initialize the data array, could be done better.
               // Data [day of the week (1-7)][hour (0-23)]
@@ -122,15 +123,18 @@ class TestChart extends Component {
                   let dt = new Date(2020, 7, 7);
                   dt.setHours(j,0,0);
                   if (typeof(data[i][j].num)  !== 'undefined') {
+                    var avgAttn = data[i][j].totalAtt / data[i][j].num;
+                    maxValue = ((avgAttn > maxValue)? avgAttn : maxValue);
+                    minValue = ((avgAttn < minValue)? avgAttn : minValue);
                     graphData.push({
                       x: i.toString(),
                       y: dt,
                       d: dt,
-                      v: data[i][j].totalAtt / data[i][j].num,
+                      v: avgAttn,
                       n: data[i][j].num
                     })
                   } 
-                  else if (j>= 12 && j <=24) {
+                  else if (j>= 14 && j <=24) {
                     graphData.push({
                       x: i.toString(),
                       y: dt,
@@ -143,9 +147,10 @@ class TestChart extends Component {
               }
               makeGraph(graphData);
             };
-
+            var maxValue = 0;
+            var minValue = 100000;
             function makeGraph(graphData) {
-              Chart.defaults.fontSize = 12;
+              console.log(minValue);
               const ctx = document.getElementById('chart-area').getContext('2d');
               window.myMatrix = new Chart(ctx, {
                   type: 'matrix',
@@ -155,17 +160,17 @@ class TestChart extends Component {
                       data: graphData,
                       backgroundColor(c) {
                         const value = c.dataset.data[c.dataIndex].v;
-                        const alpha = (10 + value) / 60;
-                        return Chart.helpers.color('green').alpha(alpha).rgbString();
+                        const alpha = (value == 0)? (5 / maxValue) : (15 + value - minValue) / maxValue;
+                        return Chart.helpers.color('#313F54').alpha(alpha).rgbString();
                       },
                       borderColor(c) {
                         const value = c.dataset.data[c.dataIndex].v;
-                        const alpha = (10 + value) / 60;
-                        return Chart.helpers.color('green').alpha(alpha).darken(0.3).rgbString();
+                        const alpha = (value == 0)? (5 / maxValue): (15 + value - minValue) / maxValue;
+                        return Chart.helpers.color('#313F54').alpha(alpha).darken(0.3).rgbString();
                       },
                       borderWidth: 1,
-                      hoverBackgroundColor: 'yellow',
-                                  hoverBorderColor: 'yellowgreen',
+                      hoverBackgroundColor: '#C5B1FC',
+                                  hoverBorderColor: '#855CF8',
                                   width(c) {
                         const a = c.chart.chartArea || {};
                         const nt = c.chart.scales.x.ticks.length;
@@ -184,6 +189,11 @@ class TestChart extends Component {
                     legend: {
                       display: false
                     },
+                    // title: {
+                    //   display: true,
+                    //   fontSize: 40,
+                    //   text: 'Average Attendance Based on Time and Day of the Week'
+                    // },
                     tooltips: {
                       displayColors: false,
                       callbacks: {
@@ -192,7 +202,7 @@ class TestChart extends Component {
                         },
                         label(context) {
                           const v = context.dataset.data[context.dataIndex];
-                          return ['v: ' + v.v.toFixed(2),'n: ' + v.n];
+                          return ['Average Attendance: ' + v.v.toFixed(2),'Sample Size: ' + v.n];
                         }
                       }
                     },
@@ -204,14 +214,11 @@ class TestChart extends Component {
                         time: {
                           unit: 'hour',
                           round: 'hour',
-                          // displayFormats: {
-                          //     hour: 'hA'
-                          // }
                         },
                         ticks: {
                           maxRotation: 0,
                           autoSkip: true,
-                          padding: 1
+                          padding: 10
                         },
                         gridLines: {
                           display: false,
@@ -273,4 +280,4 @@ class TestChart extends Component {
     );
   }
 }
-export default TestChart;
+export default HeatMap;

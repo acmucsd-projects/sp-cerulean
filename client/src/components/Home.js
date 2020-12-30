@@ -14,7 +14,7 @@ import {
 import { UserContext } from "../UserContext";
 import { Redirect } from "react-router-dom";
 import AverageChart from "./AverageChart";
-import TestChart from "./TestChart";
+import HeatMap from "./HeatMap";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,7 +121,7 @@ const Home = () => {
         <AverageChart numberOfEvents={10} />
       </div>
       <div style={{ width: "75%" }}>
-        <TestChart />
+        <HeatMap />
       </div>
       <Grid container spacing={3} direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
