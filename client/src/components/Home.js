@@ -16,6 +16,7 @@ import { Redirect } from "react-router-dom";
 import AverageChart from "./AverageChart";
 import HeatMap from "./HeatMap";
 import PieChart from "./PieChart";
+import Footer from "./Footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,9 +84,12 @@ const Home = () => {
           >
             Event Attendance
       </Box>
-      <Grid container direction="row" alignItems="center">
+      
+      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
         <Grid item xs={12} sm={6}>
-          <Paper className={classes.paper}>Heatmap</Paper>
+          <Paper className={classes.paper}>
+            <HeatMap />
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Line Chart<br />
@@ -115,21 +119,14 @@ const Home = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper className={classes.paper}>pie chart
+          <Paper className={classes.paper}>
+            <PieChart />
           </Paper>
         </Grid>
       </Grid>
-      <div style={{ width: "75%", marginTop: "2%" }}>
-        <PieChart />
-      </div>
-      <div style={{ width: "75%", marginTop: "2%" }}>
-        <AverageChart numberOfEvents={10} />
-      </div>
-      <div style={{ width: "75%" }}>
-        <HeatMap />
-      </div>
       <Divider className={classes.divider} variant="middle" />
-      <Grid container direction="row" alignItems="center">
+      <Footer />
+      {/* <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
             fontWeight="fontWeightBold"
@@ -217,7 +214,7 @@ const Home = () => {
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Event 2</Paper>
         </Grid>
-      </Grid>
+      </Grid> */}
     </div>
   );
 };

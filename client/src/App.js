@@ -47,7 +47,6 @@ const App = () => {
                 <Route exact path="/" component={Login} />
                 <Route path="/home" component={Home} />
               </Switch>
-              <Footer />
             </UserContext.Provider>
           </div>
         </React.Fragment>

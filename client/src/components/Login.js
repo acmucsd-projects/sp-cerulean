@@ -12,8 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     maxWidth: "90%",
     maxHeight: "90%",
-    marginLeft: "10%",
-    marginRight: "10%",
+    marginLeft: "25%",
   },
   item1: {
     order: 2,
@@ -32,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginLeft: theme.spacing(0),
     marginRight: theme.spacing(1),
+  },
+  appBar: {
+    top: 'auto',
+    bottom: 0,
   },
 }));
 

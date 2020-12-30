@@ -2,7 +2,7 @@ import { AppBar, Typography, Grid } from "@material-ui/core";
 
 const Footer = () => {
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" color="primary" >
       <Grid
       justify="space-between"
       container 
