@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textField: {
     marginTop: theme.spacing(0),
-    marginBottom: theme.spacing(),
+    marginBottom: theme.spacing(1),
     marginLeft: theme.spacing(0),
     marginRight: theme.spacing(1),
     width: 200,
@@ -50,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(3),
+  },
+  heatMap: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(6),
   },
 }));
 
@@ -87,7 +91,7 @@ const Home = () => {
       
       <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
         <Grid item xs={12} sm={6}>
-          <Paper className={classes.paper}>
+          <Paper className={classes.heatMap}>
             <HeatMap />
           </Paper>
         </Grid>
@@ -112,7 +116,7 @@ const Home = () => {
         </Grid>
       </Grid>
       <Divider className={classes.divider} variant="middle" />
-      <Grid container direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>              
             <AverageChart numberOfEvents={5} />
