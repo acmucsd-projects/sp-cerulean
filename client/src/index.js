@@ -1,36 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import React, { Fragment } from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#000000"
+      main: "#000000",
     },
     secondary: {
-      main: "#3C4858"
-    }
+      main: "#3C4858",
+    },
   },
   typography: {
     h1: {
-      fontFamily: 'Nunito',
-      fontSize: '64px'
+      fontFamily: "Nunito",
+      fontSize: "64px",
     },
     h2: {
-      fontFamily: 'Nunito',
-      fontSize: '36px'
-    }
-  }
+      fontFamily: "Nunito",
+      fontSize: "36px",
+    },
+  },
 });
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Fragment>
     <ThemeProvider theme={theme}>
-    <App />
+      <App />
     </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </Fragment>,
+  document.getElementById("root")
 );
-
