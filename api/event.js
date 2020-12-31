@@ -80,7 +80,7 @@ router.get(
     const eventQueryString =
       "SELECT * FROM eventtable WHERE eventstart BETWEEN $1 AND $2 ORDER BY eventstart";
     const attendanceQueryString =
-      "SELECT COUNT(*) FROM attendance WHERE event_id = $1";
+      "SELECT event_id, COUNT(*) FROM attendance GROUP BY event_id";
 
     try {
       const events = (
@@ -89,11 +89,15 @@ router.get(
           req.params.endDate,
         ])
       ).rows;
+
+      const attendanceCounts = await db.query(attendanceQueryString);
+      const attendancesById = {};
+      for (const row of attendanceCounts.rows) {
+        attendancesById[row["event_id"]] = parseInt(row["count"], 10);
+      }
+
       for (const ev of events) {
-        const attendanceCount = parseInt(
-          (await db.query(attendanceQueryString, [ev.uuid])).rows[0].count
-        );
-        ev.attendances = attendanceCount;
+        ev.attendances = attendancesById[ev.uuid];
       }
       res.status(200).json(events);
     } catch (err) {
