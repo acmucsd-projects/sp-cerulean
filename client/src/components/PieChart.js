@@ -13,7 +13,7 @@ const PieChart = () => {
       title: {
         display: true,
         text: "Suborg Events",
-        fontSize: 40,
+        fontSize: 30,
       },
       legend: {
         display: true,

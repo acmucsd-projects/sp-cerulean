@@ -1,7 +1,7 @@
 import "date-fns";
 import React, { useContext } from "react";
-import { ReactComponent as Computers } from "./computers.svg";
-import { Grid, Paper, Box, Typography, TextField } from "@material-ui/core";
+// import { ReactComponent as Computers } from "./computers.svg";
+import { Grid, Paper, Box, Typography, TextField, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -16,6 +16,7 @@ import { Redirect } from "react-router-dom";
 import AverageChart from "./AverageChart";
 import HeatMap from "./HeatMap";
 import PieChart from "./PieChart";
+import Footer from "./Footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,12 +47,20 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     width: 200,
   },
+  divider: {
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(3),
+  },
+  heatMap: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(6),
+  },
 }));
 
 const Home = () => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
-  const [type, setType] = React.useState("");
+  const [type, setType] = React.useState("10");
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2014-08-18T21:11:54")
   );
@@ -70,9 +79,7 @@ const Home = () => {
 
   return (
     <div>
-      <Grid container spacing={3} direction="row" alignItems="center">
-        <Grid item xs={12} sm={4}>
-          <Box
+      <Box
             fontWeight="fontWeightBold"
             fontSize={36}
             fontFamily="Nunito"
@@ -80,54 +87,50 @@ const Home = () => {
             style={{ padding: 10 }}
           >
             Event Attendance
-          </Box>
-          <Paper className={classes.paper}>tags</Paper>
+      </Box>
+      
+      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.heatMap}>
+            <HeatMap />
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
-          <FormControl
-            variant="outlined"
-            className={classes.formControl}
-            style={{ minWidth: 280 }}
-          >
-            <Select
-              id="chart-type"
-              value={type}
-              onChange={handleChange}
-              displayEmpty
-              defaultValue={10}
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>Line Chart<br />
+            <FormControl
+              variant="outlined"
+              className={classes.formControl}
             >
-              <MenuItem value={10}>Week In Quarter</MenuItem>
-              <MenuItem value={20}>Day of Week and Time</MenuItem>
-              <MenuItem value={30}>Time Since Event Annoucement</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Computers className={classes.img} />
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} direction="row" alignItems="center">
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>chart</Paper>
+              <Select
+                id="chart-type"
+                value={type}
+                onChange={handleChange}
+                displayEmpty
+              >
+                <MenuItem value={10}>Week In Quarter</MenuItem>
+                <MenuItem value={20}>Day of Week and Time</MenuItem>
+                <MenuItem value={30}>Time Since Event Annoucement</MenuItem>
+              </Select>
+            </FormControl>
+          </Paper>
         </Grid>
       </Grid>
-      <div style={{ width: "75%", marginTop: "2%" }}>
-        <PieChart />
-      </div>
-      <div style={{ width: "75%", marginTop: "2%" }}>
-        <AverageChart numberOfEvents={10} />
-      </div>
-      <div style={{ width: "75%" }}>
-        <HeatMap />
-      </div>
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Divider className={classes.divider} variant="middle" />
+      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>              
+            <AverageChart numberOfEvents={5} />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>
+            <PieChart />
+          </Paper>
+        </Grid>
+      </Grid>
+      <Divider className={classes.divider} variant="middle" />
+      <Footer />
+      {/* <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={4}>
           <Box
             fontWeight="fontWeightBold"
@@ -136,7 +139,7 @@ const Home = () => {
             textAlign="left"
             style={{ padding: 10 }}
           >
-            Predictions
+            DEPRECATED: <br />Predictions
           </Box>
           <Grid
             container
@@ -208,31 +211,15 @@ const Home = () => {
       >
         Recommendations
       </Box>
-      <Grid container spacing={3} direction="row" alignItems="center">
+      <Grid container direction="row" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Event 1</Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>Event 2</Paper>
         </Grid>
-      </Grid>
+      </Grid> */}
     </div>
   );
-
-  //   return (
-  //     <div>
-  //       <Grid container spacing={3} direction="row" alignItems="center">
-  //         <Grid item xs={12} sm={4}>
-  //           <Paper className={classes.paper}>1</Paper>
-  //         </Grid>
-  //         <Grid item xs={12} sm={4}>
-  //           <Paper className={classes.paper}>2</Paper>
-  //         </Grid>
-  //         <Grid item xs={12} sm={4}>
-  //           <Computers className={classes.img} />
-  //         </Grid>
-  //       </Grid>
-  //     </div>
-  //   );
 };
 export default Home;
