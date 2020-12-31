@@ -14,7 +14,7 @@ class HeatMap extends Component {
         	(function(Utils) {
             const chartjsUrl = 'https://cdn.jsdelivr.net/npm/chart.js@3.0.0-alpha.2/dist/chart.js';
             const dateFnsUrl = 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.1.0-alpha/dist/chartjs-adapter-date-fns.bundle.js';
-            const remoteUrl = 'http://yourjavascript.com/042111232565/chartjs-chart-matrix.js';
+            const remoteUrl = 'https://yourjavascript.com/042111232565/chartjs-chart-matrix.js';
             const axiosUrl = 'https://unpkg.com/axios/dist/axios.min.js';
 
             function addScript(url, done, error) {
