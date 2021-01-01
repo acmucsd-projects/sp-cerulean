@@ -503,14 +503,14 @@ const LineChart = () => {
           id="chart-type"
           value={state.timePeriod}
           onChange={(e) => {
-            setState({ ...state, data: { datasets: [] }, timePeriod: e.target.value });
+            setState({ ...state, data: { datasets: [] }, timePeriod: e.target.value, justMounted: true });
           }}
         >
-          <MenuItem value={"Last 7 Days"}>Last 7 Days</MenuItem>
+          {/**<MenuItem value={"Last 7 Days"}>Last 7 Days</MenuItem>**/}
           <MenuItem value={"Last 30 Days"}>Last 30 Days</MenuItem>
           <MenuItem value={"Last 12 Weeks"}>Last 12 Weeks</MenuItem>
           <MenuItem value={"Last 24 Weeks"}>Last 24 Weeks</MenuItem>
-          <MenuItem value={"Last 12 Months"}>Last 12 Months</MenuItem>
+          {/**<MenuItem value={"Last 12 Months"}>Last 12 Months</MenuItem>**/}
         </Select>
       </div>
         </div>

@@ -80,7 +80,7 @@ const Home = () => {
 
   return (
     <div>
-      <Box
+      {/*<Box
             fontWeight="fontWeightBold"
             fontSize={36}
             fontFamily="Nunito"
@@ -88,7 +88,7 @@ const Home = () => {
             style={{ padding: 10 }}
           >
             Event Attendance
-      </Box>
+      </Box>*/}
       
       <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
         <Grid item xs={12} sm={6}>
