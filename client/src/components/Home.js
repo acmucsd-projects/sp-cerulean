@@ -16,6 +16,7 @@ import { Redirect } from "react-router-dom";
 import AverageChart from "./AverageChart";
 import HeatMap from "./HeatMap";
 import PieChart from "./PieChart";
+import LineChart from "./LineChart";
 import Footer from "./Footer";
 
 const useStyles = makeStyles((theme) => ({
@@ -96,22 +97,8 @@ const Home = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper className={classes.paper}>Line Chart<br />
-            <FormControl
-              variant="outlined"
-              className={classes.formControl}
-            >
-              <Select
-                id="chart-type"
-                value={type}
-                onChange={handleChange}
-                displayEmpty
-              >
-                <MenuItem value={10}>Week In Quarter</MenuItem>
-                <MenuItem value={20}>Day of Week and Time</MenuItem>
-                <MenuItem value={30}>Time Since Event Annoucement</MenuItem>
-              </Select>
-            </FormControl>
+          <Paper className={classes.paper}>
+            <LineChart />
           </Paper>
         </Grid>
       </Grid>
