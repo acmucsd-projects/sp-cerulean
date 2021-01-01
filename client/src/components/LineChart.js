@@ -16,11 +16,16 @@ const LineChart = () => {
                 text: "Event Attendance",
                 fontSize: 40,
             },
+            elements: {
+                point: {
+                    radius: 6
+                }
+            },
             scales : {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: "Event Attendance",
+                        labelString: "Number of Attendees",
                         padding: 10,
                         fontSize: 15,
                         beginAtZero: true,
@@ -35,6 +40,7 @@ const LineChart = () => {
             },
         },
         timePeriod: "Last 30 Days",
+        justMounted: true
     });
     let eventAttendance;
     let labels = [];
@@ -86,7 +92,6 @@ const LineChart = () => {
                 labelString = "Months From Today";
                 break;
             default:
-                console.log('inside default');
                 break;
         }
 
@@ -148,13 +153,13 @@ const LineChart = () => {
                 break;
         }
         for (let i = 0; i < numValues; i++) {
-            generalAttendance.push(0);
-            aiAttendance.push(0);
-            hackAttendance.push(0);
-            designAttendance.push(0);
-            cyberAttendance.push(0);
-            innovateAttendance.push(0);
-            allAttendance.push(0);
+            generalAttendance.push(null);
+            aiAttendance.push(null);
+            hackAttendance.push(null);
+            designAttendance.push(null);
+            cyberAttendance.push(null);
+            innovateAttendance.push(null);
+            allAttendance.push(null);
         }
 
         eventAttendance = [generalAttendance, aiAttendance, hackAttendance,
@@ -224,37 +229,53 @@ const LineChart = () => {
 
             switch (eventInfo.organization) {
                 case "ACM":
+                    if (generalAttendance[index] === null)
+                        generalAttendance[index] = 0;
                     generalAttendance[index] += eventInfo.attendances;
                     break;
                 case "AI":
+                    if (aiAttendance[index] === null)
+                        aiAttendance[index] = 0;
                     aiAttendance[index] += eventInfo.attendances;
                     break;
                 case "Hack":
+                    if (hackAttendance[index] === null)
+                        hackAttendance[index] = 0;
                     hackAttendance[index] += eventInfo.attendances;
                     break;
                 case "Design":
+                    if (designAttendance[index] === null)
+                        designAttendance[index] = 0;
                     designAttendance[index] += eventInfo.attendances;
                     break;
                 case "Cyber":
+                    if (cyberAttendance[index] === null)
+                        cyberAttendance[index] = 0;
                     cyberAttendance[index] += eventInfo.attendances;
                     break;
                 case "Innovate":
+                    if (innovateAttendance[index] === null)
+                        innovateAttendance[index] = 0;
                     innovateAttendance[index] += eventInfo.attendances;
                     break;
                 default:
+                    if (generalAttendance[index] === null)
+                        generalAttendance[index] = 0;
                     generalAttendance[index] += eventInfo.attendances;
                     break;
             }
         });
         for (let i = 0; i < allAttendance.length; i++) {
-            let attendanceCount = 0;
+            let attendanceCount = null;
             for (let j = 0; j < eventAttendance.length; j++) {
-                attendanceCount += eventAttendance[j][i];
+                if (attendanceCount === null && eventAttendance[j][i] !== null)
+                    attendanceCount = 0;
+                if (eventAttendance[j][i] !== null)
+                    attendanceCount += eventAttendance[j][i];
             }
             allAttendance[i] = attendanceCount;
         }
         eventAttendance.push(allAttendance);
-        console.log('inside getData');
     }
 
     const displayALL = async () => {
@@ -268,7 +289,7 @@ const LineChart = () => {
                 labels: labels
         
             }
-            setState({ ...state, data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -279,17 +300,14 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "#A6CEE3",
                     pointBackgroundColor: "#A6CEE3",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[6],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
-        console.log('inside displayAll');
-        console.log(eventAttendance);
-
+        setState({ ...state, data: tableData, justMounted: false });
     }
 
     const displayAI = async () => {
@@ -302,7 +320,7 @@ const LineChart = () => {
                 datasets: datasets,
                 labels: labels
             }
-            setState({ ...state, data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -313,14 +331,14 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "rgb(255, 112, 114)",
                     pointBackgroundColor: "rgb(255, 112, 114)",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[1],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
+        setState({ ...state, data: tableData, justMounted: false });
     }
 
     const displayCYBER = async () => {
@@ -333,7 +351,7 @@ const LineChart = () => {
                 datasets: datasets,
                 labels: labels
             }
-            setState({ ...state, data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -344,14 +362,14 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "rgb(59, 192, 192)",
                     pointBackgroundColor: "rgb(59, 192, 192)",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[4],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
+        setState({ ...state, data: tableData, justMounted: false });
     }
 
     const displayDESIGN = async () => {
@@ -364,7 +382,7 @@ const LineChart = () => {
                 datasets: datasets,
                 labels: labels
             }
-            setState({ data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -375,14 +393,14 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "rgb(240, 130, 160)",
                     pointBackgroundColor: "rgb(240, 130, 160)",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[3],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
+        setState({ ...state, data: tableData, justMounted: false });
     }
 
     const displayHACK = async () => {
@@ -395,7 +413,7 @@ const LineChart = () => {
                 datasets: datasets,
                 labels: labels
             }
-            setState({ ...state, data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -406,14 +424,14 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "rgb(255, 168, 95)",
                     pointBackgroundColor: "rgb(255, 168, 95)",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[2],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
+        setState({ ...state, data: tableData, justMounted: false });
     }
 
     const displayINNOVATE = async () => {
@@ -426,7 +444,7 @@ const LineChart = () => {
                 datasets: datasets,
                 labels: labels
             }
-            setState({ ...state, data: tableData });
+            setState({ ...state, data: tableData, justMounted: false });
             return;
         }
         //inserts into graph and updates state
@@ -437,15 +455,20 @@ const LineChart = () => {
                     fill: false,
                     borderColor: "rgb(126, 109, 246)",
                     pointBackgroundColor: "rgb(126, 109, 246)",
-                    pointRadius: 6,
                     lineTension: 0,
+                    spanGaps: true,
                     data: eventAttendance[5],
                 }
             ],
             labels: labels
         };
-        setState({ ...state, data: tableData });
+        setState({ ...state, data: tableData, justMounted: false });
     }
+
+    useEffect(() => {
+        if (state.justMounted)
+            displayALL();
+    })
     
     return (
         <div className="chart">
