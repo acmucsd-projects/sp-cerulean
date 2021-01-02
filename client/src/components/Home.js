@@ -80,17 +80,7 @@ const Home = () => {
 
   return (
     <div>
-      {/*<Box
-            fontWeight="fontWeightBold"
-            fontSize={36}
-            fontFamily="Nunito"
-            textAlign="left"
-            style={{ padding: 10 }}
-          >
-            Event Attendance
-      </Box>*/}
-      
-      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%" }}>
+      <Grid container direction="row" alignItems="center" spacing={4} style={{ width: "100%", marginTop: "4px" }}>
         <Grid item xs={12} sm={6}>
           <Paper className={classes.heatMap}>
             <HeatMap />
